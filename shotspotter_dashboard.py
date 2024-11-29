@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import streamlit as st
-from streamlit_dynamic_filters import DynamicFilters
+# from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
 
