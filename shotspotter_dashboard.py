@@ -4,7 +4,7 @@ import streamlit as st
 # from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
-from scipy.stats import wilcoxon
+#from scipy.stats import wilcoxon
 
 # read file
 df = pd.read_csv(
