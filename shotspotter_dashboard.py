@@ -177,6 +177,7 @@ selected_df_year["colour"] = np.where(
     "#00ff2a"
 )
 
+temp_year_df = selected_df_year.pivot(index = "year", columns="shotspotter_alert", values=["event_counts", "shell_casings", "injuries", "arrests"])
 
 # summary
 # "Events", "Shell Casings", "Injuries", "Arrests"
@@ -225,7 +226,7 @@ with tab_events:
         )
 
         # show table
-        #st.dataframe(selected_df_year)
+        st.dataframe(temp_year_df["event_counts"])
 
     with col_maps:
         st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='events')
