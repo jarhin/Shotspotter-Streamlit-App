@@ -4,7 +4,7 @@ import streamlit as st
 # from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
-#from scipy.stats import wilcoxon
+from scipy.stats import wilcoxon
 
 # read file
 df = pd.read_csv(
@@ -177,7 +177,11 @@ selected_df_year["colour"] = np.where(
     "#00ff2a"
 )
 
-temp_year_df = selected_df_year.pivot(index = "year", columns="shotspotter_alert", values=["event_counts", "shell_casings", "injuries", "arrests"])
+temp_year_df = selected_df_year.pivot(
+    index = "year", 
+    columns="shotspotter_alert", 
+    values=["event_counts", "shell_casings", "injuries", "arrests"]
+)
 
 # summary
 # "Events", "Shell Casings", "Injuries", "Arrests"
@@ -210,7 +214,23 @@ with tab_events:
     a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_event_counts"]:.2f}")
     a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_event_counts"]:.2%}")
 
-    col_timeseries, col_maps = st.columns(2)
+    # test
+    t_stat_event_counts, p_value_event_counts = wilcoxon(
+        temp_year_df["event_counts"][True], 
+        temp_year_df["event_counts"][False]
+    )
+
+    # hypythesis
+    event_count_hypothesis = "The event counts are not equal between groups" if p_value_event_counts < 0.05 else "The event counts are equal between groups"
+
+    # columns 2nd row
+    b1, b2 = st.columns(2)
+    b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_event_counts:.2f}")
+    b2.metric("Hypothesis", f"{event_count_hypothesis}")
+
+
+
+    col_timeseries, col_table, col_maps = st.columns(3)
 
     with col_timeseries:
         # tab
@@ -225,6 +245,7 @@ with tab_events:
             color="colour"
         )
 
+    with col_table:
         # show table
         st.dataframe(temp_year_df["event_counts"])
 
@@ -246,7 +267,23 @@ with tab_shell_casings:
     a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_shell_casings"]:.2%}")
 
 
-    col_timeseries, col_maps = st.columns(2)
+    # test
+    t_stat_shell_casings, p_value_shell_casings = wilcoxon(
+        temp_year_df["shell_casings"][True], 
+        temp_year_df["shell_casings"][False]
+    )
+
+    # hypythesis
+    shell_casings_hypothesis = "The shell counts are not equal between groups" if p_value_shell_casings < 0.05 else "The shell counts are equal between groups"
+
+    # columns 2nd row
+    b1, b2 = st.columns(2)
+    b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_shell_casings:.2f}")
+    b2.metric("Hypothesis", f"{shell_casings_hypothesis}")
+
+
+
+    col_timeseries, col_table, col_maps = st.columns(3)
 
     with col_timeseries:
         # tab
@@ -260,6 +297,10 @@ with tab_shell_casings:
             y = "shell_casings",
             color="colour"
         )
+
+    with col_table:
+        # show table
+        st.dataframe(temp_year_df["shell_casings"])
 
     with col_maps:
         st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='shell_casings')
@@ -279,7 +320,21 @@ with tab_injuries:
     a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_injuries"]:.2%}")
 
 
-    col_timeseries, col_maps = st.columns(2)
+    # test
+    t_stat_injuries, p_value_injuries = wilcoxon(
+        temp_year_df["injuries"][True], 
+        temp_year_df["injuries"][False]
+    )
+
+    # hypythesis
+    injuries_hypothesis = "The injury counts are not equal between groups" if p_value_injuries < 0.05 else "The injury counts are equal between groups"
+
+    # columns 2nd row
+    b1, b2 = st.columns(2)
+    b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_injuries:.2f}")
+    b2.metric("Hypothesis", f"{injuries_hypothesis}")
+
+    col_timeseries, col_table, col_maps = st.columns(3)
 
 
     with col_timeseries:
@@ -295,6 +350,11 @@ with tab_injuries:
             y = "injuries",
             color="colour"
         )
+
+    with col_table:
+    # show table
+        st.dataframe(temp_year_df["injuries"])
+        
 
     with col_maps:
         st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='injuries')
@@ -314,7 +374,24 @@ with tab_arrests:
     a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_arrests"]:.2f}")
     a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_arrests"]:.2%}")
 
-    col_timeseries, col_maps = st.columns(2)
+
+
+    # test
+    t_stat_arrests, p_value_arrests = wilcoxon(
+        temp_year_df["arrests"][True], 
+        temp_year_df["arrests"][False]
+    )
+
+    # hypythesis
+    arrests_hypothesis = "The arrest counts are not equal between groups" if p_value_arrests < 0.05 else "The arrest counts are equal between groups"
+
+    # columns 2nd row
+    b1, b2 = st.columns(2)
+    b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_arrests:.2f}")
+    b2.metric("Hypothesis", f"{arrests_hypothesis}")
+
+
+    col_timeseries, col_table, col_maps = st.columns(3)
 
 
     with col_timeseries:
@@ -329,6 +406,10 @@ with tab_arrests:
             y = "arrests",
             color="colour"
         )
-
+    
+    with col_table:
+    # show table
+        st.dataframe(temp_year_df["arrests"])
+    
     with col_maps:
         st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='arrests')
