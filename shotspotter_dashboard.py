@@ -4,6 +4,7 @@ import streamlit as st
 # from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
+from scipy.stats import wilcoxon
 
 # read file
 df = pd.read_csv(
@@ -56,14 +57,20 @@ year_range_max = full_combinations_df["year"].max()
 st.set_page_config(
     page_title="Shotspotter Dashboard",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': "https://www.theblackresponsecambridge.com/shotspottersoundthinking"
+    }
 )
 
+# slider
 select_year_slider = st.sidebar.select_slider("Year range:", options=select_year_range, value=(year_range_max, year_range_min))
 
 min_slider, max_slider = list(select_year_slider)[0], list(select_year_slider)[1]
 
-
+# filters
 selected_df_year = full_combinations_df[((full_combinations_df["year"] <= max_slider) & (full_combinations_df["year"] >= min_slider))]
 
 
@@ -195,12 +202,12 @@ with tab_events:
     st.write(f"We consider the events with no alerts as the baseline.")
 
     # columns
-    b1, b2, b3, b4, b5 = st.columns(5)
-    b1.metric("No. of Yr", f"{dict_variables_summary["count_years_event_counts"]}")
-    b2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_event_counts"]:.2f}")
-    b3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_event_counts"]:.2f}")
-    b4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_event_counts"]:.2f}")
-    b5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_event_counts"]:.2%}")
+    a1, a2, a3, a4, a5 = st.columns(5)
+    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_event_counts"]}")
+    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_event_counts"]:.2f}")
+    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_event_counts"]:.2f}")
+    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_event_counts"]:.2f}")
+    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_event_counts"]:.2%}")
 
     col_timeseries, col_maps = st.columns(2)
 
@@ -209,13 +216,16 @@ with tab_events:
         st.header("Events Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'event_counts']].reset_index(drop=True))
+        
         st.line_chart(
             selected_df_year,
             x = "year",
             y = "event_counts",
             color="colour"
         )
+
+        # show table
+        #st.dataframe(selected_df_year)
 
     with col_maps:
         st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='events')
@@ -227,12 +237,12 @@ with tab_shell_casings:
     st.write(f"We consider the events with no alerts as the baseline.")
 
     # columns
-    b1, b2, b3, b4, b5 = st.columns(5)
-    b1.metric("No. of Yr", f"{dict_variables_summary["count_years_shell_casings"]}")
-    b2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_shell_casings"]:.2f}")
-    b3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_shell_casings"]:.2f}")
-    b4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_shell_casings"]:.2f}")
-    b5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_shell_casings"]:.2%}")
+    a1, a2, a3, a4, a5 = st.columns(5)
+    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_shell_casings"]}")
+    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_shell_casings"]:.2f}")
+    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_shell_casings"]:.2f}")
+    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_shell_casings"]:.2f}")
+    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_shell_casings"]:.2%}")
 
 
     col_timeseries, col_maps = st.columns(2)
@@ -260,12 +270,12 @@ with tab_injuries:
     st.write(f"We consider the events with no alerts as the baseline.")
 
     # columns
-    b1, b2, b3, b4, b5 = st.columns(5)
-    b1.metric("No. of Yr", f"{dict_variables_summary["count_years_injuries"]}")
-    b2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_injuries"]:.2f}")
-    b3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_injuries"]:.2f}")
-    b4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_injuries"]:.2f}")
-    b5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_injuries"]:.2%}")
+    a1, a2, a3, a4, a5 = st.columns(5)
+    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_injuries"]}")
+    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_injuries"]:.2f}")
+    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_injuries"]:.2f}")
+    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_injuries"]:.2f}")
+    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_injuries"]:.2%}")
 
 
     col_timeseries, col_maps = st.columns(2)
@@ -296,12 +306,12 @@ with tab_arrests:
     st.write(f"We consider the events with no alerts as the baseline.")
 
     # columns
-    b1, b2, b3, b4, b5 = st.columns(5)
-    b1.metric("No. of Yr", f"{dict_variables_summary["count_years_arrests"]}")
-    b2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_arrests"]:.2f}")
-    b3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_arrests"]:.2f}")
-    b4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_arrests"]:.2f}")
-    b5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_arrests"]:.2%}")
+    a1, a2, a3, a4, a5 = st.columns(5)
+    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_arrests"]}")
+    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_arrests"]:.2f}")
+    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_arrests"]:.2f}")
+    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_arrests"]:.2f}")
+    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_arrests"]:.2%}")
 
     col_timeseries, col_maps = st.columns(2)
 
