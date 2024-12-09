@@ -4,7 +4,7 @@ import streamlit as st
 # from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
-#from scipy.stats import wilcoxon
+# from scipy.stats import mannwhitneyu
 
 # read file
 df = pd.read_csv(
@@ -177,11 +177,15 @@ selected_df_year["colour"] = np.where(
     "#00ff2a"
 )
 
-temp_year_df = selected_df_year.pivot(
-    index = "year", 
-    columns="shotspotter_alert", 
-    values=["event_counts", "shell_casings", "injuries", "arrests"]
-)
+#temp_year_df = selected_df_year.pivot(
+#    index = "year", 
+#    columns="shotspotter_alert", 
+#    values=["event_counts", "shell_casings", "injuries", "arrests"]
+#).sort_index()
+
+
+# mann-whitney u test
+#https://www.statology.org/mann-whitney-u-test-python/
 
 # summary
 # "Events", "Shell Casings", "Injuries", "Arrests"
@@ -214,8 +218,7 @@ with tab_events:
     a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_event_counts"]:.2f}")
     a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_event_counts"]:.2%}")
 
-    # test
-    # t_stat_event_counts, p_value_event_counts = wilcoxon(temp_year_df["event_counts"][True], temp_year_df["event_counts"][False])
+
 
     # hypythesis
     #event_count_hypothesis = "The event counts are not equal between groups" if p_value_event_counts < 0.05 else "The event counts are equal between groups"
