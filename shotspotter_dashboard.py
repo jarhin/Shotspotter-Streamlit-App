@@ -4,6 +4,8 @@ import streamlit as st
 # from streamlit_dynamic_filters import DynamicFilters
 from itertools import product
 import numpy as np
+import pydeck as pdk
+
 # from scipy.stats import mannwhitneyu
 
 # read file
@@ -159,10 +161,12 @@ df_filtered = df_filtered.assign(
 )
 
 # Fix colour
-df_filtered["colour"] = np.where(
+df_filtered = df_filtered.assign(
+    colour = np.where(
     df_filtered["shotspotter_alert"],
-    "#ff0800",
-    "#00ff2a"
+        "#ff0800",
+        "#00ff2a"
+    )
 )
 
 # set constant for events
@@ -191,6 +195,15 @@ selected_df_year["colour"] = np.where(
 # "Events", "Shell Casings", "Injuries", "Arrests"
 # dict_variables_summary["sum_var_true" + my_col]
 # list_column_names = ["event_counts", "shell_casings", "injuries", "arrests"]
+
+
+# common map objects
+initial_viewing_state = pdk.ViewState(
+    longitude=-71.11219,
+    latitude=42.37834,
+    zoom = 13
+)
+
 with tab_executive_summary:
 
     st.header("Number of Years")
@@ -251,7 +264,49 @@ with tab_events:
     #   st.dataframe(temp_year_df["event_counts"])
 
     with col_maps:
-        st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='events')
+
+        layer_events = pdk.Layer(
+            "ScatterplotLayer",
+            data = df_filtered,
+            get_position = ["longitude", "latitude"],
+            get_fill_color="[180, 0, 200, 140]",
+            get_radius=1000
+        )
+
+        # Set the viewport location
+        view_state = pdk.ViewState(
+            longitude=-1.415,
+            latitude=52.2323,
+            zoom=6,
+            min_zoom=5,
+            max_zoom=15,
+            pitch=40.5,
+            bearing=-27.36)
+
+        UK_ACCIDENTS_DATA = 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv'
+
+        layer = pdk.Layer(
+            'ScatterplotLayer',     # Change the `type` positional argument here
+            UK_ACCIDENTS_DATA,
+            get_position=['lng', 'lat'],
+            auto_highlight=True,
+            get_radius=1000,          # Radius is given in meters
+            get_fill_color='[180, 0, 200, 140]',  # Set an RGBA value for fill
+            pickable=True)
+
+
+        st.pydeck_chart(
+            pdk.Deck(
+                map_style=None,
+                initial_view_state=view_state,
+                layers=[
+                    layer,
+                ],
+            )
+        )
+
+
+        #st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='events')
 
 with tab_shell_casings:
 
