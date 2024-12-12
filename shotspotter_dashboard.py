@@ -281,23 +281,28 @@ with tab_events:
 
     with col_maps:
 
+        # events layer
         layer_events = pdk.Layer(
             "ScatterplotLayer",
             data = df_filtered,
             get_position = ["longitute", "latitude"],
             get_fill_color="colour_map",
-            get_radius=50,
-            opacity=0.75,
+            get_radius="events * 75",
+            opacity=0.5,
             stroked=True,
-            filled=True
+            filled=True,
+            pickable=True
         )
 
+        # tooltip
+        tooltip_event = {"text": "{events} event(s) at {location}"}
 
-
+        # chart layer
         st.pydeck_chart(
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
-                layers = [layer_events]
+                layers = [layer_events],
+                tooltip=tooltip_event
             )
         )
 
