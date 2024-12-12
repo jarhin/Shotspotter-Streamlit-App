@@ -18,16 +18,6 @@ df = pd.read_csv(
 ).rename(columns={"shell_casings": "casings"})
 
 
-# load shotspotter device location
-worldwide_shotspotter = pd.read_csv(
-    os.path.join(
-        os.path.dirname('__file__'),
-        "Data/shotspotter_data_UPdating - shotspotter_data.csv"
-        ),
-        header=0
-).drop(
-    columns=["Unnamed: 0", "Unnamed: 4"]
-).rename(columns={"Unnamed: 3": "Region"})
 
 # change columns and clean data
 df_summary = df.assign(

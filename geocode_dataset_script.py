@@ -38,3 +38,19 @@ df['LAT_LON_arcgis'] = df['partial_address'].apply(lambda x: service_geocode(geo
 
 # write data
 df.to_csv("Data/2018-2024_cambridge_shotspotter_incidents - cambridge_shotspotter_incidents_extended_geocoded.csv")
+
+#
+# load shotspotter device location
+worldwide_shotspotter = pd.read_csv(
+    os.path.join(
+        os.path.dirname('__file__'),
+        "Data/shotspotter_data_UPdating - shotspotter_data.csv"
+        ),
+        header=0
+).drop(
+    columns=["Unnamed: 0", "Unnamed: 4"]
+).rename(columns={"Unnamed: 3": "Region"})
+
+# TODO
+# Filter devices in a box around Cambridge
+# Load filtered devices to saved file to load later in shotspotter_dashboard.py
