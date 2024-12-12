@@ -198,11 +198,11 @@ selected_df_year["colour"] = np.where(
 
 
 # common map objects
-initial_viewing_state = pdk.ViewState(
-    longitude=-71.11219,
-    latitude=42.37834,
-    zoom = 13
+initial_viewing_state = pdk.data_utils.compute_view(
+    df_filtered[["longitute", "latitude"]],
+    view_proportion=1
 )
+
 
 with tab_executive_summary:
 
@@ -268,9 +268,9 @@ with tab_events:
         layer_events = pdk.Layer(
             "ScatterplotLayer",
             data = df_filtered,
-            get_position = ["longitude", "latitude"],
-            get_fill_color="[180, 0, 200, 140]",
-            get_radius=1000
+            get_position = ["longitute", "latitude"],
+            get_color="[255, 75, 75]",
+            get_radius=50
         )
 
         # Set the viewport location
@@ -297,11 +297,8 @@ with tab_events:
 
         st.pydeck_chart(
             pdk.Deck(
-                map_style=None,
-                initial_view_state=view_state,
-                layers=[
-                    layer,
-                ],
+                initial_view_state=initial_viewing_state,
+                layers = [layer_events]
             )
         )
 
