@@ -173,7 +173,7 @@ colour_lookup = {
 # Fix colours including for map
 df_filtered = df_filtered.assign(
     colour = np.where(
-    df_filtered["shotspotter_alert"],
+        df_filtered["shotspotter_alert"],
         "#ff0000",
         "#00ff00"
     ),
@@ -189,10 +189,12 @@ df_filtered = df_filtered.assign(
 )
 
 # Fix colour
-selected_df_year["colour"] = np.where(
-    selected_df_year["shotspotter_alert"],
-    "#ff0800",
-    "#00ff2a"
+selected_df_year = selected_df_year.assign(
+    colour = np.where(
+        selected_df_year["shotspotter_alert"],
+        "#ff0000",
+        "#00ff00"
+    )
 )
 
 #temp_year_df = selected_df_year.pivot(
