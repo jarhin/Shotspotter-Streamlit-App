@@ -165,8 +165,8 @@ df_filtered = df_filtered.assign(
 
 
 colour_lookup = {
-    True: [255, 8, 0, 1],
-    False: [0, 255, 42, 1]
+    True: [255, 0, 0, 128],
+    False: [0, 255, 0, 128]
 }
 
 
@@ -285,8 +285,11 @@ with tab_events:
             "ScatterplotLayer",
             data = df_filtered,
             get_position = ["longitute", "latitude"],
-            get_fill_color="colour",
-            get_radius=50
+            get_fill_color="colour_map",
+            get_radius=50,
+            opacity=0.75,
+            stroked=True,
+            filled=True
         )
 
 
