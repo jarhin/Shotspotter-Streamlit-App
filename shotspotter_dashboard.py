@@ -11,10 +11,10 @@ import pydeck as pdk
 # read file
 df = pd.read_csv(
     os.path.join(
-        os.path.dirname('__file__'), 
+        os.path.dirname('__file__'),
         "Data/2018-2024_cambridge_shotspotter_incidents - cambridge_shotspotter_incidents_extended_geocoded.csv"
         ),
-        header=0 
+        header=0
 )
 
 df_summary = df.assign(
@@ -127,11 +127,14 @@ for my_col in list_column_names:
     # word summary for sums
     dict_variables_summary["sum_increase_decrease" + "_" + my_col] = "increase" if dict_variables_summary["sum_var_true" + "_" + my_col] >= dict_variables_summary["sum_var_false" + "_" + my_col] else "decrease"
     dict_variables_summary["sum_increase_decrease" + "_prefix_" + my_col] = "an" if dict_variables_summary["sum_increase_decrease" + "_" + my_col] == "increase" else "a"
-    dict_variables_summary["sum_percentage_diff_" + my_col] = abs(dict_variables_summary["sum_var_false" + "_" + my_col] - dict_variables_summary["sum_var_true" + "_" + my_col]) / dict_variables_summary["sum_var_false" + "_" + my_col] 
+    dict_variables_summary["sum_percentage_diff_" + my_col] = 0 if dict_variables_summary["sum_var_false" + "_" + my_col] == 0 else abs(dict_variables_summary["sum_var_false" + "_" + my_col] - dict_variables_summary["sum_var_true" + "_" + my_col]) / dict_variables_summary["sum_var_false" + "_" + my_col]
 
     # summary for means
     dict_variables_summary["mean_diff_" + my_col] = float(dict_variables_summary["mean_var_true" + "_" + my_col] -  dict_variables_summary["mean_var_false" + "_" + my_col])
-    dict_variables_summary["mean_percentage_diff_" + my_col] = float((dict_variables_summary["mean_var_true" + "_" + my_col] -  dict_variables_summary["mean_var_false" + "_" + my_col]) / dict_variables_summary["mean_var_false" + "_" + my_col])
+    dict_variables_summary["mean_percentage_diff_" + my_col] = float(
+        0 if dict_variables_summary["mean_var_false" + "_" + my_col] == 0 else
+        (dict_variables_summary["mean_var_true" + "_" + my_col] -  dict_variables_summary["mean_var_false" + "_" + my_col]) / dict_variables_summary["mean_var_false" + "_" + my_col]
+    )
 
     # summary for counts
     dict_variables_summary["count_years_" + my_col] = int(
@@ -160,14 +163,25 @@ df_filtered = df_filtered.assign(
     longitute = df_filtered["longitute"].astype("float")
 )
 
-# Fix colour
+
+colour_lookup = {
+    True: [255, 8, 0, 1],
+    False: [0, 255, 42, 1]
+}
+
+
+# Fix colours including for map
 df_filtered = df_filtered.assign(
     colour = np.where(
     df_filtered["shotspotter_alert"],
-        "#ff0800",
-        "#00ff2a"
-    )
+        "#ff0000",
+        "#00ff00"
+    ),
+    colour_map = df_filtered["shotspotter_alert"].apply(lambda row: colour_lookup.get(row))
 )
+
+
+
 
 # set constant for events
 df_filtered = df_filtered.assign(
@@ -269,30 +283,10 @@ with tab_events:
             "ScatterplotLayer",
             data = df_filtered,
             get_position = ["longitute", "latitude"],
-            get_color="[255, 75, 75]",
+            get_fill_color="colour",
             get_radius=50
         )
 
-        # Set the viewport location
-        view_state = pdk.ViewState(
-            longitude=-1.415,
-            latitude=52.2323,
-            zoom=6,
-            min_zoom=5,
-            max_zoom=15,
-            pitch=40.5,
-            bearing=-27.36)
-
-        UK_ACCIDENTS_DATA = 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv'
-
-        layer = pdk.Layer(
-            'ScatterplotLayer',     # Change the `type` positional argument here
-            UK_ACCIDENTS_DATA,
-            get_position=['lng', 'lat'],
-            auto_highlight=True,
-            get_radius=1000,          # Radius is given in meters
-            get_fill_color='[180, 0, 200, 140]',  # Set an RGBA value for fill
-            pickable=True)
 
 
         st.pydeck_chart(
