@@ -15,17 +15,18 @@ df = pd.read_csv(
         "Data/2018-2024_cambridge_shotspotter_incidents - cambridge_shotspotter_incidents_extended_geocoded.csv"
         ),
         header=0
-)
+).rename(columns={"shell_casings": "casings"})
 
+# change columns and clean data
 df_summary = df.assign(
-    shell_casings = lambda x: x.shell_casings.fillna(0),
+    casings = lambda x: x.casings.fillna(0),
     injuries = lambda x: x.injuries.fillna(0),
     arrests = lambda x: x.arrests.fillna(0)
 ).groupby(
     ["year", "shotspotter_alert"]
 ).agg(
     event_counts = pd.NamedAgg(aggfunc="count", column="additional_details"),
-    shell_casings = pd.NamedAgg(column="shell_casings", aggfunc="sum"),
+    casings = pd.NamedAgg(column="casings", aggfunc="sum"),
     injuries = pd.NamedAgg(column="injuries", aggfunc="sum"),
     arrests = pd.NamedAgg(column="arrests", aggfunc="sum"),
 ).reset_index(drop=False)
@@ -44,7 +45,7 @@ full_combinations_df = pd.merge(
     on = columns_required,
     how = "right"
 ).assign(
-    shell_casings = lambda x: x.shell_casings.fillna(0),
+    casings = lambda x: x.casings.fillna(0),
     injuries = lambda x: x.injuries.fillna(0),
     arrests = lambda x: x.arrests.fillna(0)
 )
@@ -77,7 +78,7 @@ selected_df_year = full_combinations_df[((full_combinations_df["year"] <= max_sl
 
 
 # column names for looping
-list_column_names = ["event_counts", "shell_casings", "injuries", "arrests"]
+list_column_names = ["event_counts", "casings", "injuries", "arrests"]
 
 # dictionary of variables
 dict_variables_summary = {}
@@ -149,7 +150,7 @@ dict_variables_summary["count_years"] = max([dict_variables_summary["count_years
 
 
 # create tabs ------
-tab_executive_summary, tab_events, tab_shell_casings, tab_injuries, tab_arrests = st.tabs(["Executive Summary", "Events", "Shell Casings", "Injuries", "Arrests"])
+tab_executive_summary, tab_events, tab_casings, tab_injuries, tab_arrests = st.tabs(["Executive Summary", "Events", "Shell Casings", "Injuries", "Arrests"])
 
 
 df_filtered = df[((df["year"] <= max_slider) & (df["year"] >= min_slider))]
@@ -200,7 +201,7 @@ selected_df_year = selected_df_year.assign(
 #temp_year_df = selected_df_year.pivot(
 #    index = "year", 
 #    columns="shotspotter_alert", 
-#    values=["event_counts", "shell_casings", "injuries", "arrests"]
+#    values=["event_counts", "casings", "injuries", "arrests"]
 #).sort_index()
 
 
@@ -210,7 +211,7 @@ selected_df_year = selected_df_year.assign(
 # summary
 # "Events", "Shell Casings", "Injuries", "Arrests"
 # dict_variables_summary["sum_var_true" + my_col]
-# list_column_names = ["event_counts", "shell_casings", "injuries", "arrests"]
+# list_column_names = ["event_counts", "casings", "injuries", "arrests"]
 
 
 # common map objects
@@ -218,6 +219,36 @@ initial_viewing_state = pdk.data_utils.compute_view(
     df_filtered[["longitute", "latitude"]],
     view_proportion=1
 )
+
+# some defaults
+opacity_default = 0.5
+radius_default = 50
+
+# helper functions for line chart
+def display_linechart_viz(y_col: str, color_col: str):
+    st.line_chart(
+        selected_df_year,
+        x = "year",
+        y = y_col,
+        color=color_col
+    )
+
+
+# helper function for map
+def hisplay_map_layer(my_radius_col: str, radius_size: int, opacity_value: float):
+
+    # chart layer
+    return pdk.Layer(
+        "ScatterplotLayer",
+        data = df_filtered,
+        get_position = ["longitute", "latitude"],
+        get_fill_color="colour_map",
+        get_radius=f"{my_radius_col} * {radius_size}",
+        opacity=opacity_value,
+        stroked=True,
+        filled=True,
+        pickable=True
+    )
 
 
 with tab_executive_summary:
@@ -227,7 +258,7 @@ with tab_executive_summary:
     st.subheader("Events")
     st.write(f"We find that a total of {dict_variables_summary["sum_var_false_event_counts"]} non-Shotspotter events compared to a total of {dict_variables_summary["sum_var_true_event_counts"]} Shotspotter events, which is {dict_variables_summary["sum_increase_decrease_event_counts"]} {dict_variables_summary["sum_increase_decrease_prefix_event_counts"]} of {dict_variables_summary["sum_percentage_diff_event_counts"]:.2%} when we consider the non-Shotspotter events as the baseline.")
     st.subheader("Shell Casings")
-    st.write(f"We find that a total of {dict_variables_summary["sum_var_false_shell_casings"]} shell casings during non-Shotspotter events compared to a total of {dict_variables_summary["sum_var_true_shell_casings"]} shell casings during Shotspotter events, which is {dict_variables_summary["sum_increase_decrease_shell_casings"]} {dict_variables_summary["sum_increase_decrease_prefix_shell_casings"]} of {dict_variables_summary["sum_percentage_diff_shell_casings"]:.2%} when we consider the non-Shotspotter shell casings as the baseline.")
+    st.write(f"We find that a total of {dict_variables_summary["sum_var_false_casings"]} shell casings during non-Shotspotter events compared to a total of {dict_variables_summary["sum_var_true_casings"]} shell casings during Shotspotter events, which is {dict_variables_summary["sum_increase_decrease_casings"]} {dict_variables_summary["sum_increase_decrease_prefix_casings"]} of {dict_variables_summary["sum_percentage_diff_casings"]:.2%} when we consider the non-Shotspotter shell casings as the baseline.")
     st.subheader("Injuries")
     st.write(f"We find that a total of {dict_variables_summary["sum_var_false_injuries"]} injuries during non-Shotspotter events compared to a total of {dict_variables_summary["sum_var_true_injuries"]} injuries during Shotspotter events, which is {dict_variables_summary["sum_increase_decrease_injuries"]} {dict_variables_summary["sum_increase_decrease_prefix_injuries"]} of {dict_variables_summary["sum_percentage_diff_injuries"]:.2%} when we consider the non-Shotspotter injuries as the baseline.")
     st.subheader("Arrests")
@@ -267,13 +298,10 @@ with tab_events:
         st.header("Events Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
+
+        # line_chart
+        display_linechart_viz(y_col="event_counts", color_col="colour")
         
-        st.line_chart(
-            selected_df_year,
-            x = "year",
-            y = "event_counts",
-            color="colour"
-        )
 
     #with col_table:
     #    # show table
@@ -281,35 +309,21 @@ with tab_events:
 
     with col_maps:
 
-        # events layer
-        layer_events = pdk.Layer(
-            "ScatterplotLayer",
-            data = df_filtered,
-            get_position = ["longitute", "latitude"],
-            get_fill_color="colour_map",
-            get_radius="events * 75",
-            opacity=0.5,
-            stroked=True,
-            filled=True,
-            pickable=True
-        )
-
-        # tooltip
-        tooltip_event = {"text": "{events} event(s) at {location}"}
-
-        # chart layer
+        # chart
         st.pydeck_chart(
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
-                layers = [layer_events],
-                tooltip=tooltip_event
+                layers = [
+                    hisplay_map_layer(my_radius_col="events", radius_size = radius_default, opacity_value = opacity_default)
+                ],
+                tooltip={"text": "{events} event(s) at {location}"}
             )
         )
 
 
         #st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='events')
 
-with tab_shell_casings:
+with tab_casings:
 
     # header
     st.header("Shotspotter Alerts")
@@ -317,26 +331,26 @@ with tab_shell_casings:
 
     # columns
     a1, a2, a3, a4, a5 = st.columns(5)
-    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_shell_casings"]}")
-    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_shell_casings"]:.2f}")
-    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_shell_casings"]:.2f}")
-    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_shell_casings"]:.2f}")
-    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_shell_casings"]:.2%}")
+    a1.metric("No. of Yr", f"{dict_variables_summary["count_years_casings"]}")
+    a2.metric("Alert: Avg. No. Events Per Yr.", f"{dict_variables_summary["mean_var_true_casings"]:.2f}")
+    a3.metric("No alert: Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_var_false_casings"]:.2f}")
+    a4.metric("Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_diff_casings"]:.2f}")
+    a5.metric("Percent Diff. in Avg. No. of Events Per Yr.", f"{dict_variables_summary["mean_percentage_diff_casings"]:.2%}")
 
 
     ## test
-    #t_stat_shell_casings, p_value_shell_casings = wilcoxon(
-    #    temp_year_df["shell_casings"][True], 
-    #    temp_year_df["shell_casings"][False]
+    #t_stat_casings, p_value_casings = wilcoxon(
+    #    temp_year_df["casings"][True],
+    #    temp_year_df["casings"][False]
     #)
 
     # hypythesis
-    #shell_casings_hypothesis = "The shell counts are not equal between groups" if p_value_shell_casings < 0.05 else "The shell counts are equal between groups"
+    #casings_hypothesis = "The shell counts are not equal between groups" if p_value_casings < 0.05 else "The shell counts are equal between groups"
 
     # columns 2nd row
     #b1, b2 = st.columns(2)
-    #b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_shell_casings:.2f}")
-    #2.metric("Hypothesis", f"{shell_casings_hypothesis}")
+    #b1.metric("Wilcoxon-Signed Rank Test", f"{p_value_casings:.2f}")
+    #2.metric("Hypothesis", f"{casings_hypothesis}")
 
 
 
@@ -349,20 +363,30 @@ with tab_shell_casings:
         st.header("Shell Casings Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'shell_casings']].reset_index(drop=True))
-        st.line_chart(
-            selected_df_year,
-            x = "year",
-            y = "shell_casings",
-            color="colour"
-        )
+        # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'casings']].reset_index(drop=True))
+
+        # line_chart
+        display_linechart_viz(y_col="casings", color_col="colour")
 
     #with col_table:
     #    # show table
-    #    st.dataframe(temp_year_df["shell_casings"])
+    #    st.dataframe(temp_year_df["casings"])
 
     with col_maps:
-        st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='shell_casings')
+
+
+        # chart
+        st.pydeck_chart(
+            pdk.Deck(
+                initial_view_state=initial_viewing_state,
+                layers = [
+                    hisplay_map_layer(my_radius_col="casings", radius_size = radius_default, opacity_value = 0.2)
+                ],
+                tooltip={"text": "{casings} shell casing(s) at {location}"}
+            )
+        )
+
+        #st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='casings')
 
 with tab_injuries:
 
@@ -404,20 +428,30 @@ with tab_injuries:
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
         #st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'injuries']].reset_index(drop=True))
-        st.line_chart(
-            selected_df_year,
-            x = "year",
-            y = "injuries",
-            color="colour"
-        )
+
+        # line_chart
+        display_linechart_viz(y_col="injuries", color_col="colour")
 
     #with col_table:
     ## show table
     #    st.dataframe(temp_year_df["injuries"])
-        
+
 
     with col_maps:
-        st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='injuries')
+
+        # chart
+        st.pydeck_chart(
+            pdk.Deck(
+                initial_view_state=initial_viewing_state,
+                layers = [
+                    hisplay_map_layer(my_radius_col="injuries", radius_size = radius_default, opacity_value = opacity_default)
+                ],
+                tooltip={"text": "{injuries} injuried at {location}"}
+            )
+        )
+
+
+        #st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='injuries')
 
 
 with tab_arrests:
@@ -462,16 +496,25 @@ with tab_arrests:
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'arrests']].reset_index(drop=True))
-        st.line_chart(
-            selected_df_year,
-            x = "year",
-            y = "arrests",
-            color="colour"
-        )
+
+        # line chart
+        display_linechart_viz(y_col="arrests", color_col="colour")
     
     #with col_table:
     ## show table
     #    st.dataframe(temp_year_df["arrests"])
     
     with col_maps:
-        st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='arrests')
+
+        # chart
+        st.pydeck_chart(
+            pdk.Deck(
+                initial_view_state=initial_viewing_state,
+                layers = [
+                    hisplay_map_layer(my_radius_col="arrests", radius_size = radius_default, opacity_value = opacity_default)
+                ],
+                tooltip={"text": "{arrests} arrest(s) at {location}"}
+            )
+        )
+
+        #st.map(data=df_filtered, latitude="latitude", longitude="longitute", color="colour", size='arrests')
