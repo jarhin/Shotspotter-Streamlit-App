@@ -18,12 +18,15 @@ df = pd.read_csv(
 ).rename(columns={"shell_casings": "casings"})
 
 # read devices file
+# assign weights column
 cambridge_shotspotter = pd.read_csv(
     os.path.join(
         os.path.dirname('__file__'),
         "Data/shotspotter_data_filtered.csv"
         ),
         header=0
+).assign(
+    weights = 1
 )
 
 # change columns and clean data
@@ -162,8 +165,10 @@ dict_variables_summary["count_years"] = max([dict_variables_summary["count_years
 tab_executive_summary, tab_events, tab_casings, tab_injuries, tab_arrests = st.tabs(["Executive Summary", "Events", "Shell Casings", "Injuries", "Arrests"])
 
 
+# apply filters to dataframe
 df_filtered = df[((df["year"] <= max_slider) & (df["year"] >= min_slider))]
 
+# split longitude and latitude
 # https://stackoverflow.com/questions/29550414/how-can-i-split-a-column-of-tuples-in-a-pandas-dataframe
 df_filtered[["latitude", "longitute"]] = df_filtered['LAT_LON_arcgis'].str.extract(pat = r'(-?\d+\.\d+),\s*(-?\d+\.\d+)')
 
@@ -180,7 +185,7 @@ colour_lookup = {
 }
 
 
-# Fix colours including for map
+# Fix colours for map
 df_filtered = df_filtered.assign(
     colour = np.where(
         df_filtered["shotspotter_alert"],
@@ -228,6 +233,35 @@ initial_viewing_state = pdk.data_utils.compute_view(
     df_filtered[["longitute", "latitude"]],
     view_proportion=1
 )
+
+
+
+# https://deckgl.readthedocs.io/en/latest/gallery/heatmap_layer.html#heatmaplayer
+
+
+COLOR_BREWER_BLUE_SCALE = [
+    [240, 249, 232],
+    [204, 235, 197],
+    [168, 221, 181],
+    [123, 204, 196],
+    [67, 162, 202],
+    [8, 104, 172],
+]
+
+# we use sum since IOS has issues with floats in the browser
+# https://deck.gl/docs/api-reference/aggregation-layers/heatmap-layer#limitations
+shotspotter_devices_layer = pdk.Layer(
+    "HeatmapLayer",
+    data=cambridge_shotspotter,
+    opacity=0.1,
+    get_position = ["lon", "lat"],
+    # aggregation=pdk.types.String("SUM"),
+    color_range=COLOR_BREWER_BLUE_SCALE,
+    # threshold=0.05,
+    get_weight="weights",
+    # pickable=True
+)
+
 
 # some defaults
 opacity_default = 0.5
@@ -307,6 +341,7 @@ with tab_events:
         st.header("Events Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
+        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
 
         # line_chart
         display_linechart_viz(y_col="event_counts", color_col="colour")
@@ -323,9 +358,14 @@ with tab_events:
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
                 layers = [
-                    hisplay_map_layer(my_radius_col="events", radius_size = radius_default, opacity_value = opacity_default)
+                    hisplay_map_layer(
+                        my_radius_col="events", 
+                        radius_size = radius_default, 
+                        opacity_value = opacity_default
+                    ),
+                    shotspotter_devices_layer
                 ],
-                tooltip={"text": "{events} event(s) at {location}"}
+                tooltip={"text": "{date} at {time}: {events} event(s) at {location}"}
             )
         )
 
@@ -372,6 +412,7 @@ with tab_casings:
         st.header("Shell Casings Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
+        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'casings']].reset_index(drop=True))
 
         # line_chart
@@ -389,9 +430,14 @@ with tab_casings:
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
                 layers = [
-                    hisplay_map_layer(my_radius_col="casings", radius_size = radius_default, opacity_value = 0.2)
+                    hisplay_map_layer(
+                        my_radius_col="casings", 
+                        radius_size = radius_default, 
+                        opacity_value = 0.2
+                    ),
+                    shotspotter_devices_layer
                 ],
-                tooltip={"text": "{casings} shell casing(s) at {location}"}
+                tooltip={"text": "{date} at {time}: {casings} shell casing(s) at {location}"}
             )
         )
 
@@ -436,6 +482,7 @@ with tab_injuries:
         st.header("Injuries Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
+        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
         #st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'injuries']].reset_index(drop=True))
 
         # line_chart
@@ -453,9 +500,14 @@ with tab_injuries:
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
                 layers = [
-                    hisplay_map_layer(my_radius_col="injuries", radius_size = radius_default, opacity_value = opacity_default)
+                    hisplay_map_layer(
+                        my_radius_col="injuries", 
+                        radius_size = radius_default, 
+                        opacity_value = opacity_default
+                    ),
+                    shotspotter_devices_layer
                 ],
-                tooltip={"text": "{injuries} injuried at {location}"}
+                tooltip={"text": "{date} at {time}: {injuries} injuried at {location}"}
             )
         )
 
@@ -504,6 +556,7 @@ with tab_arrests:
         st.header("Arrests Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
+        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'arrests']].reset_index(drop=True))
 
         # line chart
@@ -520,9 +573,14 @@ with tab_arrests:
             pdk.Deck(
                 initial_view_state=initial_viewing_state,
                 layers = [
-                    hisplay_map_layer(my_radius_col="arrests", radius_size = radius_default, opacity_value = opacity_default)
+                    hisplay_map_layer(
+                        my_radius_col="arrests", 
+                        radius_size = radius_default, 
+                        opacity_value = opacity_default
+                    ),
+                    shotspotter_devices_layer
                 ],
-                tooltip={"text": "{arrests} arrest(s) at {location}"}
+                tooltip={"text": "{date} at {time}: {arrests} arrest(s) at {location}"}
             )
         )
 
