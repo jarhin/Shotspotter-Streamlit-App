@@ -17,7 +17,14 @@ df = pd.read_csv(
         header=0
 ).rename(columns={"shell_casings": "casings"})
 
-
+# read devices file
+cambridge_shotspotter = pd.read_csv(
+    os.path.join(
+        os.path.dirname('__file__'),
+        "Data/shotspotter_data_filtered.csv"
+        ),
+        header=0
+)
 
 # change columns and clean data
 df_summary = df.assign(
