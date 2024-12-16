@@ -15,10 +15,10 @@ my_year = 2024
 url_daily_log = f"https://www.cambridgema.gov/Departments/cambridgepolice/News/{my_year}/{my_month:02}/{my_month:02}{my_day:02}{my_year}"
 
 # fetch
-df_one_day_log = pd.read_html(url_daily_log, skiprows = 1, header = 0)[0]
+# df_one_day_log = pd.read_html(url_daily_log, skiprows = 1, header = 0)[0]
 
 # column structure
-df_one_day_log.columns
+# df_one_day_log.columns
 # Index(['Type #  Date & Time', 'Info'], dtype='object')
 
 # from scipy.stats import mannwhitneyu
