@@ -5,6 +5,7 @@ import streamlit as st
 from itertools import product
 import numpy as np
 import pydeck as pdk
+import geopandas as gpd
 
 
 # https://www.cambridgema.gov/Departments/cambridgepolice/News/2024/05/05232024
@@ -13,6 +14,12 @@ my_day = 23
 my_month = 5
 my_year = 2024
 url_daily_log = f"https://www.cambridgema.gov/Departments/cambridgepolice/News/{my_year}/{my_month:02}/{my_month:02}{my_day:02}{my_year}"
+
+
+# some defaults
+opacity_default = 0.5
+radius_default = 50
+
 
 # fetch
 # df_one_day_log = pd.read_html(url_daily_log, skiprows = 1, header = 0)[0]
@@ -31,6 +38,43 @@ df = pd.read_csv(
         ),
         header=0
 ).rename(columns={"shell_casings": "casings"})
+
+# read shapefile
+gpd_df = gpd.read_file(
+    os.path.join(
+        os.path.dirname('__file__'),
+        "shp/cambridge_locations.shp"
+        )
+)
+
+# initialise datframe for geodata
+geo_df = pd.DataFrame()
+
+# extract values
+geo_df["lat"] = gpd_df.geometry.y
+geo_df["lon"] = gpd_df.geometry.x
+
+# set colour
+geo_df["colour"] = "#ffffff"
+
+device_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data = geo_df,
+        get_position = ["lon", "lat"],
+        get_fill_color=[0, 0, 255],
+        get_radius=radius_default/2,
+        opacity=0.25,
+        stroked=True,
+        filled=True,
+        pickable=False
+    )
+
+# get coordinates from shapefile
+# https://github.com/visgl/deck.gl/issues/4499#issuecomment-648991982
+# geo_df['coordinates'] = gpd_df.apply(lambda row : row['geometry'].__geo_interface__['coordinates'], axis=1)
+
+# set colour
+# geo_df["colour"] = "#0044ff"
 
 # read devices file
 # assign weights column
@@ -278,9 +322,7 @@ shotspotter_devices_layer = pdk.Layer(
 )
 
 
-# some defaults
-opacity_default = 0.5
-radius_default = 50
+
 
 # helper functions for line chart
 def display_linechart_viz(y_col: str, color_col: str):
@@ -356,7 +398,7 @@ with tab_events:
         st.header("Events Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
+        st.write(":blue[Blue] circles: Public Shotspotter device.")
 
         # line_chart
         display_linechart_viz(y_col="event_counts", color_col="colour")
@@ -378,7 +420,7 @@ with tab_events:
                         radius_size = radius_default, 
                         opacity_value = opacity_default
                     ),
-                    shotspotter_devices_layer
+                    device_layer
                 ],
                 tooltip={"text": "{date} at {time}: {events} event(s) at {location}"}
             )
@@ -427,7 +469,7 @@ with tab_casings:
         st.header("Shell Casings Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
+        st.write(":blue[Blue] circles: Public Shotspotter device.")
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'casings']].reset_index(drop=True))
 
         # line_chart
@@ -450,7 +492,7 @@ with tab_casings:
                         radius_size = radius_default, 
                         opacity_value = 0.2
                     ),
-                    shotspotter_devices_layer
+                    device_layer
                 ],
                 tooltip={"text": "{date} at {time}: {casings} shell casing(s) at {location}"}
             )
@@ -497,7 +539,7 @@ with tab_injuries:
         st.header("Injuries Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
+        st.write(":blue[Blue] circles: Public Shotspotter device.")
         #st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'injuries']].reset_index(drop=True))
 
         # line_chart
@@ -520,7 +562,7 @@ with tab_injuries:
                         radius_size = radius_default, 
                         opacity_value = opacity_default
                     ),
-                    shotspotter_devices_layer
+                    device_layer
                 ],
                 tooltip={"text": "{date} at {time}: {injuries} injuried at {location}"}
             )
@@ -571,7 +613,7 @@ with tab_arrests:
         st.header("Arrests Visualisations")
         st.write(":red[Red]: Shotspotter alert;")
         st.write(":green[Green]: No Shotspotter alert.")
-        st.write(":blue[Blue] and :orange[Yellow] circles: Public Shotspotter device.")
+        st.write(":blue[Blue] circles: Public Shotspotter device.")
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'arrests']].reset_index(drop=True))
 
         # line chart
@@ -593,7 +635,7 @@ with tab_arrests:
                         radius_size = radius_default, 
                         opacity_value = opacity_default
                     ),
-                    shotspotter_devices_layer
+                    device_layer
                 ],
                 tooltip={"text": "{date} at {time}: {arrests} arrest(s) at {location}"}
             )
