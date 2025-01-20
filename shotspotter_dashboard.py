@@ -431,7 +431,7 @@ with tab_events:
         # tab
         st.header("Events Visualisations")
         st.write(
-            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and blue[Blue]: Public Shotspotter devices."
+            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and :blue[Blue]: Public Shotspotter devices."
         )
         # line_chart
         display_linechart_viz(y_col="event_counts", color_col="colour")
@@ -505,7 +505,7 @@ with tab_casings:
         # tab
         st.header("Shell Casings Visualisations")
         st.write(
-            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and blue[Blue]: Public Shotspotter devices."
+            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and :blue[Blue]: Public Shotspotter devices."
         )
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'casings']].reset_index(drop=True))
 
@@ -583,7 +583,7 @@ with tab_injuries:
         # tab
         st.header("Injuries Visualisations")
         st.write(
-            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and blue[Blue]: Public Shotspotter devices."
+            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and :blue[Blue]: Public Shotspotter devices."
         )
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'injuries']].reset_index(drop=True))
 
@@ -660,7 +660,7 @@ with tab_arrests:
         # tab
         st.header("Arrests Visualisations")
         st.write(
-            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and blue[Blue]: Public Shotspotter devices."
+            ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and :blue[Blue]: Public Shotspotter devices."
         )
         # st.dataframe(selected_df_year[['year', 'shotspotter_alert', 'arrests']].reset_index(drop=True))
 
