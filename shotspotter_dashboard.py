@@ -53,7 +53,7 @@ geo_df["lat"] = gpd_df.geometry.y
 geo_df["lon"] = gpd_df.geometry.x
 
 # set colour
-geo_df["colour"] = "#ffffff"
+# geo_df["colour"] = "#ffffff"
 
 device_layer = pdk.Layer(
     "ScatterplotLayer",
@@ -138,6 +138,13 @@ select_year_slider = st.sidebar.select_slider(
 )
 
 min_slider, max_slider = list(select_year_slider)[0], list(select_year_slider)[1]
+
+# https://discuss.streamlit.io/t/changing-mapstyles-with-select-box/27069/2
+mapstyle = st.sidebar.selectbox(
+    "Choose Map Style:",
+    options=["light", "dark", "road"],
+    format_func=str.capitalize,
+)
 
 # filters
 selected_df_year = full_combinations_df[
@@ -444,6 +451,7 @@ with tab_events:
         # chart
         st.pydeck_chart(
             pdk.Deck(
+                map_style=f"{mapstyle}",  # 'light', 'dark', 'road'
                 initial_view_state=initial_viewing_state,
                 layers=[
                     hisplay_map_layer(
@@ -520,6 +528,7 @@ with tab_casings:
         # chart
         st.pydeck_chart(
             pdk.Deck(
+                map_style=f"{mapstyle}",  # 'light', 'dark', 'road'
                 initial_view_state=initial_viewing_state,
                 layers=[
                     hisplay_map_layer(
@@ -598,6 +607,7 @@ with tab_injuries:
         # chart
         st.pydeck_chart(
             pdk.Deck(
+                map_style=f"{mapstyle}",  # 'light', 'dark', 'road'
                 initial_view_state=initial_viewing_state,
                 layers=[
                     hisplay_map_layer(
@@ -675,6 +685,7 @@ with tab_arrests:
         # chart
         st.pydeck_chart(
             pdk.Deck(
+                map_style=f"{mapstyle}",  # 'light', 'dark', 'road'
                 initial_view_state=initial_viewing_state,
                 layers=[
                     hisplay_map_layer(
