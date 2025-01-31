@@ -55,17 +55,29 @@ geo_df["lon"] = gpd_df.geometry.x
 # set colour
 # geo_df["colour"] = "#ffffff"
 
-device_layer = pdk.Layer(
-    "ScatterplotLayer",
-    data=geo_df,
-    get_position=["lon", "lat"],
-    get_fill_color=[0, 0, 255],
-    get_radius=radius_default / 2,
-    opacity=0.25,
-    stroked=True,
-    filled=True,
-    pickable=False,
+# make geopandas dataframe without z points
+gpd_2d_df = gpd.GeoDataFrame(
+    geometry=gpd.points_from_xy(
+        gpd_df.geometry.x,
+        gpd_df.geometry.y
+    )
 )
+
+# make multipoints for shotspotter devices
+gpd_polygon_df = gpd_2d_df.dissolve()
+
+
+#device_layer = pdk.Layer(
+#    "ScatterplotLayer",
+#    data=geo_df,
+#    get_position=["lon", "lat"],
+#    get_fill_color=[0, 0, 255],
+#    get_radius=radius_default / 2,
+#    opacity=0.25,
+#    stroked=True,
+#    filled=True,
+#    pickable=False,
+#)
 
 # get coordinates from shapefile
 # https://github.com/visgl/deck.gl/issues/4499#issuecomment-648991982
@@ -144,6 +156,67 @@ mapstyle = st.sidebar.selectbox(
     "Choose Map Style:",
     options=["light", "dark", "road"],
     format_func=str.capitalize,
+)
+
+
+list_options = [
+    "Points", 
+    "Concave Region", 
+    "Convex Region", 
+    "Circular Region", 
+    "Rectangular Region"
+]
+
+# shotspotter choices
+shotspotter_select = st.sidebar.selectbox(
+    "Choose Shotspotter Device Visualisation Type",
+    options=list_options
+)
+
+
+# shotspotter device choices as dictionary
+dictionary_pdk_layers = {
+    "Points": pdk.Layer(
+        "GeoJsonLayer",
+        gpd_polygon_df,
+        get_fill_color=[0, 0, 255],
+        get_point_radius=10,
+        opacity=0.25
+    ),
+    "Concave Region": pdk.Layer(
+        "GeoJsonLayer",
+        gpd_polygon_df.concave_hull(),
+        get_fill_color=[0, 0, 255],
+        get_point_radius=10,
+        opacity=0.25
+    ),
+    "Convex Region": pdk.Layer(
+        "GeoJsonLayer",
+        gpd_polygon_df.convex_hull,
+        get_fill_color=[0, 0, 255],
+        get_point_radius=10,
+        opacity=0.25
+    ),
+    "Circular Region": pdk.Layer(
+        "GeoJsonLayer",
+        gpd_polygon_df.minimum_bounding_circle(),
+        get_fill_color=[0, 0, 255],
+        get_point_radius=10,
+        opacity=0.25
+    ),
+    "Rectangular Region": pdk.Layer(
+        "GeoJsonLayer",
+        gpd_polygon_df.envelope,
+        get_fill_color=[0, 0, 255],
+        get_point_radius=10,
+        opacity=0.25
+    )
+}
+
+# dictionary selection with default (i.e. points)
+device_layer = dictionary_pdk_layers.get(
+    shotspotter_select, 
+    dictionary_pdk_layers["Points"]
 )
 
 # filters
