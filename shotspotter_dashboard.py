@@ -158,6 +158,11 @@ mapstyle = st.sidebar.selectbox(
     format_func=str.capitalize,
 )
 
+# More information links
+st.sidebar.write(
+    "For more information on Shotspotter please visit [ShotspotterSounthinking Research](https://www.theblackresponsecambridge.com/shotspottersoundthinking) by [The Black Response (Cambridge, MA)](https://www.theblackresponsecambridge.com/)"
+)
+
 
 list_options = [
     "Points", 
