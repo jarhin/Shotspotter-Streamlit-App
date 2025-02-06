@@ -21,7 +21,7 @@ events_page = st.Page(
 
 casings_page = st.Page(
     page="website_pages/casings.py", 
-    title="Casings", 
+    title="Bullet Casings", 
     icon="🔎"
 )
 

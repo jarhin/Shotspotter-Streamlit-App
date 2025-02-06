@@ -169,7 +169,7 @@ device_layer = dictionary_pdk_layers.get(
 )
 
 # header
-st.header("Casings")
+st.header("Bullet Casings")
 st.write(f"We consider the events with no alerts as the baseline.")
 
 # columns
@@ -178,19 +178,19 @@ b1, b2 = st.columns(2)
 
 a1.metric("No. of Yr", f"{st.session_state["dict_variables_summary"]['count_years_casings']}")
 a2.metric(
-    "Alert: Avg. No. Casings Per Yr.",
+    "Alert: Avg. No. Bullet Casings Per Yr.",
     f"{st.session_state["dict_variables_summary"]['mean_var_true_casings']:.2f}",
 )
 a3.metric(
-    "No alert: Avg. Casings Per Yr.",
+    "No alert: Avg. Bullet Casings Per Yr.",
     f"{st.session_state["dict_variables_summary"]['mean_var_false_casings']:.2f}",
 )
 b1.metric(
-    "Diff. in Avg. Casings Per Yr.",
+    "Diff. in Avg. Bullet Casings Per Yr.",
     f"{st.session_state["dict_variables_summary"]['mean_diff_casings']:.2f}",
 )
 b2.metric(
-    "Percent Diff. in Avg. Casings Per Yr.",
+    "Percent Diff. in Avg. Bullet Casings Per Yr.",
     f"{st.session_state["dict_variables_summary"]['mean_percentage_diff_casings']:.2%}",
 )
 
@@ -199,10 +199,10 @@ st.write(
     ":red[Red]: Shotspotter alert; :green[Green]: No Shotspotter alert; and :blue[Blue]: Public Shotspotter devices."
 )
 
-st.subheader("Casings By Year and Alert")
+st.subheader("Bullet Casings By Year and Alert")
 display_linechart_viz(y_col="event_counts", color_col="colour")
 
-st.subheader("Locations of Casings and Public Devices")
+st.subheader("Locations of Bullet Casings and Public Devices")
 st.pydeck_chart(
     pdk.Deck(
         map_style=f"{st.session_state["_mapstyle"]}",  # 'light', 'dark', 'road'
