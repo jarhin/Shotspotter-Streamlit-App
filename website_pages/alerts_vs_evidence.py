@@ -286,4 +286,4 @@ plot_cm(
 )
 
 # help text
-st.markdown("More more regarding the definitions of the terms used on this page please see the following [link](https://www.researchgate.net/figure/The-confusion-matrix-shows-the-counts-of-true-and-false-predictions-obtained-with-known_fig3_305716645).")
+st.markdown("More more regarding the definitions of the terms used on this page please see the [Simple guide to confusion matrix terminology](https://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/).")
