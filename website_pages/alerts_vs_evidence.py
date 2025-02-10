@@ -171,8 +171,8 @@ cm_df = confusion_matrix(
 
 binary_classification_counts_dict = {
     "True Negative": cm_df[0][0],
-    "False Negative": cm_df[1][0],
     "True Positive": cm_df[1][1],
+    "False Negative": cm_df[1][0],
     "False Positive": cm_df[0][1]
 }
 
@@ -217,12 +217,12 @@ def calculate_metrics(tp: int, fp: int, fn: int, tn: int) -> dict:
 
 # list values
 list_values_primary = [
-    "False Positive Rate", "False Negative Rate", "Specificity", "False Discovery Rate"
+    "Specificity", "False Negative Rate", "False Discovery Rate", "False Positive Rate", 
 ]
 
-list_values_secondary = ["Accuracy", "Precision", "Recall", "F1"]
+list_values_secondary = ["Precision", "Recall", "Accuracy", "F1"]
 list_values_tertiary = [
-    "False Omission Rate", "Negative Predictive Rate"
+    "Negative Predictive Rate", "False Omission Rate"
 ]
 
 st.header("Reports vs Alerts")
