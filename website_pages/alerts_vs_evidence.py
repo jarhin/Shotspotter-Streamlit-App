@@ -194,7 +194,7 @@ def calculate_metrics(tp: int, fp: int, fn: int, tn: int) -> dict:
         f1 = 2 * (precision * recall) / (precision + recall)
         false_negative_rate = fn / (tp + fn)
         false_positive_rate = fp / (fp + tn)
-        specificity = tn / (tp + tn)
+        specificity = tn / (fp + tn)
         false_discovery_rate = fp / (tp + fp)
         false_omission_rate = fn / (fn + tn)
         negative_predictive_rate = tn / (fn + tn)
