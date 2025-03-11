@@ -397,6 +397,9 @@ st.write("Recall =", metrics["Recall String"])
 st.write("Recall =", metrics["Recall String 2"])
 st.write("Recall =", round(metrics["Recall"], page_default_rounding))
 
+st.write("We see the recall metric of ", round(metrics["Recall"], page_default_rounding), f"equals {metrics["Recall"]:.0%}.")
+st.write(f"We can regard this as {metrics["Recall"]:.0%} of gun events (or gun shootings) with a Shotspotter alert. This value is clearly {'lower than' if metrics["Recall"] < 0.9 else 'higher than' if metrics["Recall"] > 0.9 else 'equal to'} the 90% percent of shootings with a Shotspotter alert as mentioned in the barchart from the following webpage: [ShotSpotter Routinely Missed Reported Shootings, City Data Shows – South Side Weekly](https://southsideweekly.com/shotspotter-routinely-missed-reported-shootings-city-data-shows/).")
+
 st.subheader("F1")
 st.markdown("**F1:** is the weighted mean of the precision and recall")
 st.write("F1 = 2 * (precision * recall) / (precision + recall)")

@@ -7,6 +7,12 @@ executive_summary = st.Page(
     icon="📝"
 )
 
+methodology_page = st.Page(
+    page = "website_pages/methodology.py",
+    title="Methodology",
+    icon="📋"
+)
+
 alerts_evidence_page = st.Page(
     page="website_pages/alerts_vs_evidence.py", 
     title="Reports vs Alerts", 
@@ -40,7 +46,9 @@ arrests_page = st.Page(
 # navigation
 pg = st.navigation(
     [
-        executive_summary, alerts_evidence_page, 
+        methodology_page,
+        executive_summary, 
+        alerts_evidence_page, 
         events_page, casings_page, 
         injuries_page, arrests_page
     ]
