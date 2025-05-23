@@ -42,18 +42,106 @@ def load_data_incidents():
     
     return df
 
+def load_data_incidents_monthly():
+
+    # find last csv file of month
+    monthly_csv_directory = "./CSV/Monthly Reports/"
+
+    # list of files with paths
+    list_of_monthly_files = [
+        os.path.join(
+            monthly_csv_directory, 
+            file
+        ) for file in os.listdir(monthly_csv_directory)
+    ]
+
+
+    # last file by creation date
+    path_to_last_csv_file = max(list_of_monthly_files, key=os.path.getctime)
+
+    df = pd.read_csv(
+        path_to_last_csv_file,
+        header=0,
+    ).rename(
+        columns={
+            "shell_casings": "casings"
+        }
+    ).fillna(
+        {
+            "casings": 0,
+            "injuries": 0,
+            "arrests": 0
+        }
+    )
+
+    # get extra data 
+    aux_data = df[["page", "date_string", "path"]].drop_duplicates()
+
+    # return dataframes
+    return df.drop(columns=["page", "date_string", "path"]), aux_data
+
+
+def load_data_incidents_yearly():
+
+    # find all yearly files
+    yearly_csv_directory = "./CSV/Yearly Reports/"
+
+    # list of files with paths
+    list_of_yearly_files = [
+        os.path.join(
+            yearly_csv_directory, 
+            file
+        ) for file in os.listdir(yearly_csv_directory)
+    ]
+
+
+    df = pd.concat(
+                pd.read_csv(
+                    file,
+                    header=0,         
+                ).rename(
+                    columns={
+                        "shell_casings": "casings"
+                    }
+                ).fillna(
+                    {
+                        "casings": 0,
+                        "injuries": 0,
+                        "arrests": 0
+                    }
+                ) for file in list_of_yearly_files
+        )
+
+    # get extra data 
+    aux_data = df[["page", "date_string", "path"]].drop_duplicates()
+
+    # return dataframes
+    return df.drop(columns=["page", "date_string", "path"]), aux_data
+
+
+def load_all_data():
+
+    df1  = load_data_incidents()
+    df2, aux_data2 = load_data_incidents_monthly()
+    # df3, aux_data3 = load_data_incidents_yearly()
+
+    # return pd.concat([df1, df2, df3], axis=0).drop(columns=["page", "date_string", "path"]), pd.concat([aux_data2, aux_data3], axis=0)
+    return pd.concat([df1, df2], axis=0), pd.concat([aux_data2], axis=0)
+
+
 # pipeline for all combinations & years
 @st.cache_data
 def year_alert_combinations_data_incidents():
 
     # load all data to be used
-    df = load_data_incidents()
+    # df = load_data_incidents()
+    df, _ = load_all_data()
 
     # change columns and clean data
     df_summary = (
         df.groupby(["year", "shotspotter_alert"])
         .agg(
-            event_counts=pd.NamedAgg(aggfunc="count", column="additional_details"),
+            event_counts=pd.NamedAgg(aggfunc="count", column="location"),
             casings=pd.NamedAgg(column="casings", aggfunc="sum"),
             injuries=pd.NamedAgg(column="injuries", aggfunc="sum"),
             arrests=pd.NamedAgg(column="arrests", aggfunc="sum"),

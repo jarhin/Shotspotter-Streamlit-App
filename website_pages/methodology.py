@@ -1,13 +1,35 @@
 import streamlit as st
 import pandas as pd
 
+# helper imports
+from utils.helper_functions import * 
 
+
+# filename url link info
+filename_url_link_file = "./CSV/Filename URL Links/Filename URL Records.csv"
+
+# load data
+# df = load_data_incidents()
+_, aux_df = load_all_data()
+
+df_records = pd.read_csv(filename_url_link_file, header=0)
+
+# combine data
+df_records_aux = pd.merge(
+    df_records, 
+    aux_df, 
+    on = "path", 
+    how="outer"
+).rename(
+    columns={"page": "Pages", "date_string": "Dates", "Wayback Machine": "Web Archive Link"}
+)
 
 st.header("Methodology")
 
 st.subheader("BridgeStat Data")
 st.write("We make use of publicaly availiable shootings and shots fired data as reported by Cambridge Police in the BridgeStat report.")
 
+# original dataframe from past yearly reports
 df = pd.DataFrame(
     {
         "Report": [
@@ -84,8 +106,26 @@ df = pd.DataFrame(
     }
 )
 
+# combine with new data
+# TODO This may have to change once other yearly reports exists
+# we automaticall sort by date
+df_all = pd.concat(
+    [df, df_records_aux], 
+    axis=0
+).assign(
+    Report = lambda x: x["Report"].str.replace(".", ""),
+    Date_Object = lambda x: pd.to_datetime(x["Report"], format="%b %Y")
+).sort_values(
+    by = "Date_Object",
+    ascending=False,
+    na_position='last'
+).drop(
+    columns=["path", "Date_Object"]
+)
+
+# udate table with all data
 st.dataframe(
-    df,
+    df_all,
     hide_index=True,
     column_config={
         "Webpage": st.column_config.LinkColumn(

@@ -21,7 +21,8 @@ import geopandas as gpd
 from utils.helper_functions import * 
 
 # load data
-df = load_data_incidents()
+# df = load_data_incidents()
+df, _ = load_all_data()
 
 # extract min and max for global sliders
 year_range_min = df["year"].min()

@@ -13,66 +13,70 @@ import numpy as np
 from typing import List
 from typing import Optional
 
+# helper imports
+from utils.helper_functions import * 
+
 
 # read data
 # rename column for shell casing
 # fillna values for casings, injuries and arrests.
-@st.cache_data
-def load_data_incidents():
-    df = (
-        pd.read_csv(
-            os.path.join(
-                os.path.dirname("__file__"),
-                "Data/2018-2024_cambridge_shotspotter_incidents - cambridge_shotspotter_incidents_extended_geocoded.csv",
-            ),
-            header=0,
-        )
-        .rename(columns={"shell_casings": "casings"})
-        .fillna({"casings": 0, "injuries": 0, "arrests": 0})
-    )
+# @st.cache_data
+# def load_data_incidents():
+#     df = (
+#         pd.read_csv(
+#             os.path.join(
+#                 os.path.dirname("__file__"),
+#                 "Data/2018-2024_cambridge_shotspotter_incidents - cambridge_shotspotter_incidents_extended_geocoded.csv",
+#             ),
+#             header=0,
+#         )
+#         .rename(columns={"shell_casings": "casings"})
+#         .fillna({"casings": 0, "injuries": 0, "arrests": 0})
+#     )
 
-    return df
+#     return df
 
 
 # pipeline for all combinations & years
-@st.cache_data
-def year_alert_combinations_data_incidents():
-    # load all data to be used
-    df = load_data_incidents()
+# @st.cache_data
+# def year_alert_combinations_data_incidents():
+#     # load all data to be used
+#     df = load_data_incidents()
 
-    # change columns and clean data
-    df_summary = (
-        df.groupby(["year", "shotspotter_alert"])
-        .agg(
-            event_counts=pd.NamedAgg(aggfunc="count", column="additional_details"),
-            casings=pd.NamedAgg(column="casings", aggfunc="sum"),
-            injuries=pd.NamedAgg(column="injuries", aggfunc="sum"),
-            arrests=pd.NamedAgg(column="arrests", aggfunc="sum"),
-        )
-        .reset_index(drop=False)
-    )
+#     # change columns and clean data
+#     df_summary = (
+#         df.groupby(["year", "shotspotter_alert"])
+#         .agg(
+#             event_counts=pd.NamedAgg(aggfunc="count", column="additional_details"),
+#             casings=pd.NamedAgg(column="casings", aggfunc="sum"),
+#             injuries=pd.NamedAgg(column="injuries", aggfunc="sum"),
+#             arrests=pd.NamedAgg(column="arrests", aggfunc="sum"),
+#         )
+#         .reset_index(drop=False)
+#     )
 
-    # unique
-    # [python - Create all possible combinations of multiple columns in a Pandas DataFrame - Stack Overflow](https://stackoverflow.com/questions/49980763/create-all-possible-combinations-of-multiple-columns-in-a-pandas-dataframe#58903268)
+#     # unique
+#     # [python - Create all possible combinations of multiple columns in a Pandas DataFrame - Stack Overflow](https://stackoverflow.com/questions/49980763/create-all-possible-combinations-of-multiple-columns-in-a-pandas-dataframe#58903268)
 
-    columns_required = ["year", "shotspotter_alert"]
-    uniques = [df_summary[i].unique().tolist() for i in columns_required]
-    combinations_df = pd.DataFrame(product(*uniques), columns=columns_required)
+#     columns_required = ["year", "shotspotter_alert"]
+#     uniques = [df_summary[i].unique().tolist() for i in columns_required]
+#     combinations_df = pd.DataFrame(product(*uniques), columns=columns_required)
 
-    # extract values
-    full_combinations_df = pd.merge(
-        combinations_df, df_summary, on=columns_required, how="right"
-    ).assign(
-        casings=lambda x: x.casings.fillna(0),
-        injuries=lambda x: x.injuries.fillna(0),
-        arrests=lambda x: x.arrests.fillna(0),
-    )
+#     # extract values
+#     full_combinations_df = pd.merge(
+#         combinations_df, df_summary, on=columns_required, how="right"
+#     ).assign(
+#         casings=lambda x: x.casings.fillna(0),
+#         injuries=lambda x: x.injuries.fillna(0),
+#         arrests=lambda x: x.arrests.fillna(0),
+#     )
 
-    return full_combinations_df
+#     return full_combinations_df
 
 
 # load data
-df = load_data_incidents()
+# df = load_data_incidents()
+df, _ = load_all_data()
 
 # extract min and max for global sliders
 year_range_min = df["year"].min()
