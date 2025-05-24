@@ -43,6 +43,12 @@ arrests_page = st.Page(
     icon="🚓"
 )
 
+download_page = st.Page(
+    page="website_pages/download_csv_data.py", 
+    title="Download", 
+    icon="⬇️"
+)
+
 # navigation
 pg = st.navigation(
     [
@@ -50,7 +56,8 @@ pg = st.navigation(
         executive_summary, 
         alerts_evidence_page, 
         events_page, casings_page, 
-        injuries_page, arrests_page
+        injuries_page, arrests_page,
+        download_page
     ]
 )
 
