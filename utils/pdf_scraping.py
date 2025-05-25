@@ -76,7 +76,8 @@ class Shot_Events:
             "location": "", 
             "year": self.year, 
             "shotspotter_alert": "", 
-            "string_info": ""
+            "string_info": "",
+            "additional_details": ""
         }
 
         # variable based on shot_info
@@ -102,6 +103,7 @@ class Shot_Events:
 
         # set line already checked and added as false
         self.line_previously_added = False
+
 
     def check_shots_page_date_range(self) -> None:
 
@@ -240,8 +242,6 @@ class Shot_Events:
         # proper initialise
         self.shot_event = self.shot_event_template.copy()
 
-
-
         # set variable to true
         self.var_append_text = var_append_text
 
@@ -338,6 +338,10 @@ class Shot_Events:
                 # set line added
                 self.line_previously_added = True
 
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += self.current_line 
+
     def there_were_have_been(self) -> None:
         
         if self.current_line_lower.startswith(("there were", "there have been")):
@@ -373,6 +377,11 @@ class Shot_Events:
                 # set line added
                 self.line_previously_added = True
 
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += " " + self.current_line
+
+
     def check_no_shotspotter_alert(self) -> None:
         
         if self.current_line_lower.startswith("no shotspotter alert"):
@@ -390,6 +399,11 @@ class Shot_Events:
 
                 # set line added
                 self.line_previously_added = True
+
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += " " + self.current_line
+
 
     def check_shotspotter_alert(self) -> None:
 
@@ -409,6 +423,11 @@ class Shot_Events:
                 # set line added
                 self.line_previously_added = True
 
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += " " + self.current_line
+
+
     def prev_two_line_am_pm(self) -> None:
 
 
@@ -423,6 +442,11 @@ class Shot_Events:
 
                 # set line added
                 self.line_previously_added = True
+
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += self.current_line
+
 
     def current_line_am_pm(self) -> None:
 
@@ -439,6 +463,11 @@ class Shot_Events:
 
                 # set line added
                 self.line_previously_added = True
+                
+                # add text to additional_details
+                if self.shot_event.get("additional_details", None) is not None:
+                    self.shot_event["additional_details"] += self.current_line
+
     
     def current_line_shot_include_shot_info(self) -> None:
 
@@ -448,6 +477,11 @@ class Shot_Events:
             # add text to string info
             if self.shot_event.get("string_info", None) is not None:
                 self.shot_event["string_info"] += self.current_line
+
+            # add text to additional_details
+            if self.shot_event.get("additional_details", None) is not None:
+                self.shot_event["additional_details"] += self.current_line
+
 
     def test_lines_order(self) -> None:
 

@@ -92,7 +92,8 @@ if "select_year_slider" not in st.session_state:
     st.session_state["select_year_slider"] = (year_range_min, year_range_max)
 if "selected_df_year" not in st.session_state:
     st.session_state["selected_df_year"] = full_combinations_df
-
+if "jurisdiction" not in st.session_state:
+    st.session_state["jurisdiction"] = False
 
 # functions to load ans store session keys
 def keep(key):
@@ -116,6 +117,19 @@ st.sidebar.slider(
     on_change=keep,
     args=["select_year_slider"],
 )
+
+# global toggle
+unkeep("jurisdiction")
+st.sidebar.toggle(
+    "Exclude other jurisdictions (e.g. MBTA, State Police etc.)",
+    key="_jurisdiction",
+    on_change=keep,
+    args=['jurisdiction']
+)
+
+# apply toggle
+if st.session_state["jurisdiction"]:
+    df = df.loc[~df["additional_details"].str.lower().str.endswith("jurisdiction.")]
 
 # update session data by filtering years
 st.session_state["data"] = df[

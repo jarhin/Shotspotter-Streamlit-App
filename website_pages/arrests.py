@@ -50,6 +50,8 @@ if "opacity_default" not in st.session_state:
     st.session_state["opacity_default"] = 0.5
 if "colour_lookup" not in st.session_state:
     st.session_state["colour_lookup"] = {True: [255, 0, 0, 128], False: [0, 255, 0, 128]}
+if "jurisdiction" not in st.session_state:
+    st.session_state["jurisdiction"] = False
 
 # global slider
 unkeep("select_year_slider")
@@ -77,6 +79,15 @@ st.sidebar.selectbox(
     args=['mapstyle']
 )
 
+# global toggle 
+unkeep("jurisdiction")
+st.sidebar.toggle(
+    "Exclude other jurisdictions (e.g. MBTA, State Police etc.)",
+    key="_jurisdiction",
+    on_change=keep,
+    args=['jurisdiction']
+)
+
 
 # global slider 
 # maps pages
@@ -93,8 +104,11 @@ st.sidebar.selectbox(
     key="_shotspotter_select",
     on_change=keep,
     args=['shotspotter_select']
-
 )
+
+# apply toggle
+if st.session_state["jurisdiction"]:
+    df = df.loc[~df["additional_details"].str.lower().str.endswith("jurisdiction.")]
 
 # update session data by filtering years
 st.session_state["data"] = df[
