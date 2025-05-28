@@ -59,7 +59,7 @@ st.sidebar.toggle(
 
 # apply toggle
 if st.session_state["jurisdiction"]:
-    df = df.loc[~df["additional_details"].str.lower().str.endswith("jurisdiction.")]
+    df = df.loc[df["exclude_other_jurisdictions"] == False]
 
 # update session data by filtering years
 st.session_state["data"] = df[
