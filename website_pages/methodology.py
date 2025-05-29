@@ -27,7 +27,7 @@ df_records_aux = pd.merge(
 st.header("Methodology")
 
 st.subheader("BridgeStat Data")
-st.write("We make use of publicaly availiable shootings and shots fired data as reported by Cambridge Police in the BridgeStat report.")
+st.write("We make use of publicly availiable shootings and shots fired data as reported by Cambridge Police in the BridgeStat report.")
 
 # original dataframe from past yearly reports
 df = pd.DataFrame(
@@ -146,7 +146,7 @@ st.dataframe(
 )
 
 st.subheader("Shotspotter device locations data")
-st.markdown("We make use of multiple sources of publicaly available information such as [Here Are the Secret Locations of ShotSpotter Gunfire Sensors  WIRED](https://www.wired.com/story/shotspotter-secret-sensor-locations-leak/) for the locations of Shotspotter devices in public locations.")
+st.markdown("We make use of multiple sources of publicly available information such as [Here Are the Secret Locations of ShotSpotter Gunfire Sensors  WIRED](https://www.wired.com/story/shotspotter-secret-sensor-locations-leak/) for the locations of Shotspotter devices in public locations.")
 
 st.subheader("Thanks")
 st.write("We thank the Boston University Spark Team for their help with regards to the data for this Shotspotter project.")
