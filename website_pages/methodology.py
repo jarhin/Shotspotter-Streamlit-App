@@ -19,7 +19,7 @@ df_records_aux = pd.merge(
     df_records, 
     aux_df, 
     on = "path", 
-    how="outer"
+    how="inner"
 ).rename(
     columns={"page": "Pages", "date_string": "Dates", "Wayback Machine": "Web Archive Link"}
 )
