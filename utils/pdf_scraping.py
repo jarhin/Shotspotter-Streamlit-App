@@ -451,7 +451,7 @@ class Shot_Events:
     def current_line_am_pm(self) -> None:
 
 
-        if self.current_line_lower.startswith(self.am_pm_checktuple):
+        if self.current_line_lower.endswith(self.am_pm_checktuple):
 
             # make sure no previous test run
             if self.line_previously_added is False:
