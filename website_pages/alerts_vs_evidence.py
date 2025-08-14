@@ -76,7 +76,7 @@ from utils.helper_functions import *
 
 # load data
 # df = load_data_incidents()
-df, _ = load_all_data()
+df, aux_df = load_all_data()
 
 # extract min and max for global sliders
 year_range_min = df["year"].min()
@@ -88,6 +88,8 @@ full_combinations_df = year_alert_combinations_data_incidents()
 # session state
 if "data" not in st.session_state:
     st.session_state["data"] = df
+if "aux_data" not in st.session_state:
+    st.session_state["aux_data"] = aux_df
 if "select_year_slider" not in st.session_state:
     st.session_state["select_year_slider"] = (year_range_min, year_range_max)
 if "selected_df_year" not in st.session_state:

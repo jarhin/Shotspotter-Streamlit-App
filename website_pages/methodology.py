@@ -10,9 +10,15 @@ filename_url_link_file = "./CSV/Filename URL Links/Filename URL Records.csv"
 
 # load data
 # df = load_data_incidents()
-_, aux_df = load_all_data()
+df_data, aux_df = load_all_data()
 
 df_records = pd.read_csv(filename_url_link_file, header=0)
+
+# session state
+if "data" not in st.session_state:
+    st.session_state["data"] = df_data
+if "aux_data" not in st.session_state:
+    st.session_state["aux_data"] = aux_df
 
 # combine data
 df_records_aux = pd.merge(
