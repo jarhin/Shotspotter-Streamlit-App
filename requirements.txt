@@ -13,6 +13,7 @@ jinja2==3.1.6
 jsonschema==4.25.0
 jsonschema-specifications==2025.4.1
 markupsafe==3.0.2
+matplotlib==3.10.5
 narwhals==2.1.2
 numpy==2.3.2
 packaging==25.0
