@@ -42,6 +42,7 @@ def load_data_incidents():
     
     return df
 
+@st.cache_data
 def load_data_incidents_monthly():
 
     # find last csv file of month
@@ -80,7 +81,7 @@ def load_data_incidents_monthly():
     # return dataframes
     return df.drop(columns=["page", "date_string", "path"]), aux_data
 
-
+@st.cache_data
 def load_data_incidents_yearly():
 
     # find all yearly files
@@ -118,7 +119,7 @@ def load_data_incidents_yearly():
     # return dataframes
     return df.drop(columns=["page", "date_string", "path"]), aux_data
 
-
+@st.cache_data
 def load_all_data():
 
     df1  = load_data_incidents()
@@ -296,7 +297,7 @@ def executive_sumamry_dict_function():
 
 
 
-#@st.cache_data
+@st.cache_data
 def maps_pipeline_data():
 
     # load session data
@@ -367,11 +368,13 @@ def load_data_shapefile():
     return gpd_polygon_df
 
 # helper functions for line chart
+@st.cache_data
 def display_linechart_viz(y_col: str, color_col: str):
     st.line_chart(chart_pipeline_data(), x="year", y=y_col, color=color_col)
 
 
 # helper function for map
+@st.cache_data
 def display_map_layer(my_radius_col: str, radius_size: int, opacity_value: float):
     # chart layer
     return pdk.Layer(
