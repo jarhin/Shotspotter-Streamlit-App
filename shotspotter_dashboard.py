@@ -1,6 +1,6 @@
 import streamlit as st
 
-# list pages
+# list pages on site
 executive_summary = st.Page(
     page="website_pages/executive_summary.py", 
     title="Executive Summary", 
