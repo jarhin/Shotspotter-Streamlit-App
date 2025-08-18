@@ -58,7 +58,7 @@ def load_data_incidents_monthly():
 
 
     # last file by creation date
-    path_to_last_csv_file = max(list_of_monthly_files, key=os.path.getctime)
+    path_to_last_csv_file = max(list_of_monthly_files)
 
     df = pd.read_csv(
         path_to_last_csv_file,
