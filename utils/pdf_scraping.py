@@ -502,6 +502,7 @@ pdf_directory = "./PDF/Monthly Reports/"
 # list of files with paths
 list_of_files = [os.path.join(pdf_directory, file) for file in os.listdir(pdf_directory)]
 
+
 # last file by creation date
 path_to_last_file = max(list_of_files, key=os.path.getctime)
 
@@ -573,8 +574,41 @@ df = DataFrame(one_file_info_list)
 # csv directory
 csv_monthly_report_directory = "./CSV/Monthly Reports/"
 
+# We can use a dictionary to extract parts of the filename
+month_index_dict = {
+    "jan": "01",
+    "feb": "02",
+    "mar": "03",
+    "apr": "04",
+    "may": "05",
+    "jun": "06",
+    "jul": "07",
+    "aug": "08",
+    "sep": "09",
+    "oct": "10",
+    "nov": "11",
+    "dec": "12"
+}
+
+
 # filename
-current_filename = os.path.basename(path_to_last_file).replace(".pdf", ".csv")
+current_filename_temp = os.path.basename(path_to_last_file).replace(".pdf", ".csv")
+
+# extract month and year
+report_month = re.search(r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec", current_filename_temp.lower())
+report_year = re.search(r"\d{4}", current_filename_temp.lower())
+
+if report_month:
+    extact_report_month = month_index_dict.get(report_month.group())
+
+if report_year:
+    extact_report_year = report_year.group()
+
+# csv filename prefix
+csv_filename_prefix = "BridgeStat_"
+
+
+current_filename = csv_filename_prefix + extact_report_year + "-" + extact_report_month + "_" + "_".join(current_filename_temp.split("_")[2:])
 
 # write to monthly folder
 df.to_csv(os.path.join(csv_monthly_report_directory, current_filename), index=False)
