@@ -46,23 +46,29 @@ def load_data_incidents():
 def load_data_incidents_monthly():
 
     # find last csv file of month
-    monthly_csv_directory = "./CSV/Monthly Reports/"
+    # monthly_csv_directory = "./CSV/Monthly Reports/"
 
-    # list of files with paths
-    list_of_monthly_files = [
-        os.path.join(
-            monthly_csv_directory, 
-            file
-        ) for file in os.listdir(monthly_csv_directory)
-    ]
+    # # list of files with paths
+    # list_of_monthly_files = [
+    #     os.path.join(
+    #         monthly_csv_directory, 
+    #         file
+    #     ) for file in os.listdir(monthly_csv_directory)
+    # ]
 
+    # link to Filename URL Records File
+    filename_url_link_file = "./CSV/Filename URL Links/Filename URL Records.csv"
 
-    # last file by creation date
-    path_to_last_csv_file = max(list_of_monthly_files)
+    # last file using last row of Filename URL Records File
+    path_to_last_pdf_file = pd.read_csv(filename_url_link_file, encoding='utf-8').iloc[-1]["path"]
+
+    # convert to csv path
+    path_to_last_csv_file = path_to_last_pdf_file.replace("PDF", "CSV").replace(".pdf", ".csv")
 
     df = pd.read_csv(
         path_to_last_csv_file,
         header=0,
+        encoding='utf-8'
     ).rename(
         columns={
             "shell_casings": "casings"

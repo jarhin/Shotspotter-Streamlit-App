@@ -592,23 +592,7 @@ month_index_dict = {
 
 
 # filename
-current_filename_temp = os.path.basename(path_to_last_file).replace(".pdf", ".csv")
-
-# extract month and year
-report_month = re.search(r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec", current_filename_temp.lower())
-report_year = re.search(r"\d{4}", current_filename_temp.lower())
-
-if report_month:
-    extact_report_month = month_index_dict.get(report_month.group())
-
-if report_year:
-    extact_report_year = report_year.group()
-
-# csv filename prefix
-csv_filename_prefix = "BridgeStat_"
-
-
-current_filename = csv_filename_prefix + extact_report_year + "-" + extact_report_month + "_" + "_".join(current_filename_temp.split("_")[2:])
+current_filename = os.path.basename(path_to_last_file).replace(".pdf", ".csv")
 
 # write to monthly folder
 df.to_csv(os.path.join(csv_monthly_report_directory, current_filename), index=False)

@@ -129,7 +129,7 @@ if latest_filename not in os.listdir(pdf_month_directory):
         pdf_file.write(pdf_response.content)
 
     # write to csv to file
-    with open(filename_url_link_file, mode="a") as csv_file:
+    with open(filename_url_link_file, encoding='utf-8', mode="a") as csv_file:
 
 
         csv_headers = ["path", "Report", "Webpage", "PDF URL", "Wayback Machine"]
