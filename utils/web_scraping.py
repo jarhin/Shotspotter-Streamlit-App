@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin
 import os
-import re
+
 
 # write to csv file
 import csv
@@ -61,11 +61,19 @@ one_report_url_soup = BeautifulSoup(
 
 
 # we extract the "Read More" link from the page 
+# one_report_url_soup_link = urljoin(
+#     base_url, 
+#     one_report_url_soup.find(
+#         "a", 
+#         string='Read More'
+#     ).get('href')
+# )
+
 one_report_url_soup_link = urljoin(
     base_url, 
     one_report_url_soup.find(
         "a", 
-        string='Read More'
+        string=re.compile("^read more$", re.I)
     ).get('href')
 )
 
