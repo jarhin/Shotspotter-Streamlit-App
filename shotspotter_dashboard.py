@@ -66,3 +66,7 @@ pg.run()
 st.write(
     "For more information on Shotspotter please visit [ShotspotterSounthinking Research](https://www.theblackresponsecambridge.com/shotspottersoundthinking) by [The Black Response (Cambridge, MA)](https://www.theblackresponsecambridge.com/)"
 )
+
+st.write(
+    "The Source Code is located on GitHub [here](https://github.com/jarhin/Shotspotter-Streamlit-App)."
+)

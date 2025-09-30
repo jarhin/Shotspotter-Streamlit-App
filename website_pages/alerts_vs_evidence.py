@@ -351,15 +351,23 @@ def plot_cm(
     cm: np.ndarray,
     *,
     title: Optional[str] = None,
-    # display_labels: List[str] = None,
+    display_labels: List[str] = None,
     cmap: str = "Blues",
 ) -> None:
     #if display_labels is None:
     #    display_labels = ["0", "1"]
 
     fig, ax = plt.subplots()
-    disp = ConfusionMatrixDisplay(cm, display_labels=None)
+
+    # add display labels to remove [0, 1] in old plot
+    disp = ConfusionMatrixDisplay(cm, display_labels=[False, True])
+
+    # plot
     disp.plot(cmap=cmap, ax=ax)
+
+    # change axis text
+    disp.ax_.set(xlabel='Shotspotter Alert', ylabel='Gun Event')
+
     ax.set_title(title)
     st.pyplot(fig)
 
@@ -375,6 +383,15 @@ page_default_rounding = 3
 
 st.header("Brief Explanation of Terms")
 st.write("We consider the terms True and False to refer to the existence of a gun event. In contrast, we consider the terms Positive and Negative to refer to the existence of a Shotspotter alert.")
+st.subheader("Putting the confusion matrix to terms")
+st.markdown("""
+| | | |
+|:--:|:--:|:--:|
+| Gun Event: FALSE| True Negative (TN) | False Positive (FP) |
+| Gun Event: TRUE | False Negative (FN) | True Positive (TP) |
+| | Shotspotter Alert: FALSE | Shotspotter Alert: TRUE |
+"""
+)
 
 # matrix terms
 st.subheader("True Negative (TN)")
@@ -398,6 +415,9 @@ st.header("Metrics")
 
 st.subheader("Accuracy")
 st.markdown("**Accuracy:** Overall how often is Shotspotter correct?")
+st.write(f"* {metrics["Accuracy"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("Accuracy = (TP + TN) / (TP + FP + FN + TN)")
 st.write("Accuracy =", metrics["Accuracy String"])
 st.write("Accuracy =", metrics["Accuracy String 2"])
@@ -405,6 +425,9 @@ st.write("Accuracy =", round(metrics["Accuracy"], page_default_rounding))
 
 st.subheader("Precision")
 st.markdown("**Precision:** When there is a Shotspotter alert, how often is it correct?")
+st.write(f"* {metrics["Precision"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("Precision = TP / (FP + TP)")
 st.write("Precision =", metrics["Precision String"])
 st.write("Precision =", metrics["Precision String 2"])
@@ -412,6 +435,9 @@ st.write("Precision =", round(metrics["Precision"], page_default_rounding))
 
 st.subheader("Recall (Sensitivity, True Positive Rate)")
 st.markdown("**Recall:** When there is a gun event, how often do we get a Shotspotter alert?")
+st.write(f"* {metrics["Recall"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("Recall = TP / (TP + FN)")
 st.write("Recall =", metrics["Recall String"])
 st.write("Recall =", metrics["Recall String 2"])
@@ -422,6 +448,9 @@ st.write(f"We can regard this as {metrics["Recall"]:.0%} of gun events (or gun s
 
 st.subheader("F1")
 st.markdown("**F1:** is the weighted mean of the precision and recall")
+st.write(f"* {metrics["F1"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("F1 = 2 * (precision * recall) / (precision + recall)")
 st.write("F1 = 2 * TP / (2 * TP + FP + FN)")
 st.write("F1 =", metrics["F1 String"])
@@ -430,6 +459,9 @@ st.write("F1 =", round(metrics["F1"], page_default_rounding))
 
 st.subheader("Specificity (True Negative Rate)")
 st.markdown("**Specificity:** When there is a non-gun event, how often does Shotspotter give a non-alert?")
+st.write(f"* {metrics["Specificity"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("Specificity = TN / (TN + FP)")
 st.write("Specificity =", metrics["Specificity String"])
 st.write("Specificity =", metrics["Specificity String 2"])
@@ -437,6 +469,9 @@ st.write("Specificity =", round(metrics["Specificity"], page_default_rounding))
 
 st.subheader("Negative Predictive Rate")
 st.markdown("**Negative Predictive Rate:** When there is a Shotspotter non-alert, how often is there a non-gun event?")
+st.write(f"* {metrics["Negative Predictive Rate"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("Negative Predictive Rate = TN / (TN + FN)")
 st.write("Negative Predictive Rate =", metrics["Negative Predictive Rate String"])
 st.write("Negative Predictive Rate =", metrics["Negative Predictive Rate String 2"])
@@ -444,6 +479,9 @@ st.write("Negative Predictive Rate =", round(metrics["Negative Predictive Rate"]
 
 st.subheader("False Positive Rate (Type-I error, False Alarm Rate)")
 st.markdown("**False Positive Rate:** When there is a non-gun event, how often does Shotspotter give an alert?")
+st.write(f"* {metrics["False Positive Rate"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("False Positive Rate = FP / (FP + TN)")
 st.write("False Positive Rate =", metrics["False Positive Rate String"])
 st.write("False Positive Rate =", metrics["False Positive Rate String 2"])
@@ -452,6 +490,9 @@ st.write("False Positive Rate =", round(metrics["False Positive Rate"], page_def
 
 st.subheader("False Discovery Rate")
 st.markdown("**False Discovery Rate:** When there is a Shotspotter alert, how often is there a non-gun event?")
+st.write(f"* {metrics["False Discovery Rate"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("False Discovery Rate = FP / (FP + TP)")
 st.write("False Discovery Rate =", metrics["False Discovery Rate String"])
 st.write("False Discovery Rate =", metrics["False Discovery Rate String 2"])
@@ -459,6 +500,9 @@ st.write("False Discovery Rate =", round(metrics["False Discovery Rate"], page_d
 
 st.subheader("False Negative Rate (Type-II error)")
 st.markdown("**False Negative Rate:** When there is a gun event, how often do we not get a Shotspotter non-alert?")
+st.write(f"* {metrics["False Negative Rate"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("False Negative Rate =  FN / (FN + TP)")
 st.write("False Negative Rate =", metrics["False Negative Rate String"])
 st.write("False Negative Rate =", metrics["False Negative Rate String 2"])
@@ -467,6 +511,9 @@ st.write("False Negative Rate =", round(metrics["False Negative Rate"], page_def
 
 st.subheader("False Omission Rate")
 st.markdown("**False Omission Rate:** When there is a Shotspotter non-alert, how often is there a gun event?")
+st.write(f"* {metrics["False Omission Rate"]:.0%}.")
+st.write("&nbsp;")
+st.write("Computation:")
 st.write("False Omission Rate =  FN / (FN + TN)")
 st.write("False Omission Rate =", metrics["False Omission Rate String"])
 st.write("False Omission Rate =", metrics["False Omission Rate String 2"])
