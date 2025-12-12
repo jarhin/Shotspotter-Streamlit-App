@@ -203,10 +203,16 @@ class Shot_Events:
         arrests_words = re.search(r"one(?= arrest)|two(?= arrests)|three(?= arrests)|four(?= arrests)|five(?= arrests)|six(?= arrests)|seven(?= arrests)|eight(?= arrests)|nine(?= arrests)", self.var_shot_info_lower)
         one_arrest = re.search("firearm arrest|suspect arrested|male arrested|female arrested", self.var_shot_info_lower)
 
+        # new word oct 2025
+        one_arrest_words = re.search(r"arrest made", self.var_shot_info_lower)
+
         if arrests_words:
             self.shot_event["arrests"] =  self.count_dict.get(arrests_words.group(), 1)
 
         if one_arrest:
+            self.shot_event["arrests"] =  1
+
+        if one_arrest_words:
             self.shot_event["arrests"] =  1
 
     def update_shot_event_with_page_dict(self) -> None:
