@@ -206,14 +206,15 @@ class Shot_Events:
         # new word oct 2025
         one_arrest_words = re.search(r"arrest made", self.var_shot_info_lower)
 
-        if arrests_words:
-            self.shot_event["arrests"] =  self.count_dict.get(arrests_words.group(), 1)
-
+        # reorder matches in increasing numeric order
         if one_arrest:
             self.shot_event["arrests"] =  1
 
         if one_arrest_words:
             self.shot_event["arrests"] =  1
+
+        if arrests_words:
+            self.shot_event["arrests"] =  self.count_dict.get(arrests_words.group(), 1)
 
     def update_shot_event_with_page_dict(self) -> None:
 
