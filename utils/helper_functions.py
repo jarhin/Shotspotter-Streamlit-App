@@ -130,14 +130,13 @@ def load_all_data():
 
     df1  = load_data_incidents()
     df2, aux_data2 = load_data_incidents_monthly()
-    # df3, aux_data3 = load_data_incidents_yearly()
+    df3, aux_data3 = load_data_incidents_yearly()
 
-    df3 = pd.concat([df1, df2], axis=0, ignore_index=True).assign(
+    df4 = pd.concat([df1, df2, df3], axis=0, ignore_index=True).assign(
         exclude_other_jurisdictions = lambda x: x["additional_details"].str.lower().str.endswith("jurisdiction.")
     )
 
-    # return pd.concat([df1, df2, df3], axis=0).drop(columns=["page", "date_string", "path"]), pd.concat([aux_data2, aux_data3], axis=0)
-    return df3, pd.concat([aux_data2], axis=0, ignore_index=True)
+    return df4, pd.concat([aux_data2, aux_data3], axis=0, ignore_index=True)
 
 
 # pipeline for all combinations & years
