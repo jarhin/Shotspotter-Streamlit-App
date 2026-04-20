@@ -258,27 +258,27 @@ def executive_sumamry_dict_function():
     return temp_dict_results
 
 # create variable of summary since values used in other dashboard pages
-st.session_state["dict_variables_summary"] = executive_sumamry_dict_function()
+st.session_state['dict_variables_summary'] = executive_sumamry_dict_function()
 
 
 st.header("Executive Summary")
 st.subheader("Number of Years")
 st.write(
-    f"We consider {st.session_state["dict_variables_summary"]['count_years']} years of selected data."
+    f"We consider {st.session_state['dict_variables_summary']['count_years']} years of selected data."
 )
 st.subheader("Events")
 st.write(
-    f"We find that a total of {st.session_state["dict_variables_summary"]['sum_var_false_event_counts']} non-Shotspotter events compared to a total of {st.session_state["dict_variables_summary"]['sum_var_true_event_counts']} Shotspotter events, which is {st.session_state["dict_variables_summary"]['sum_increase_decrease_event_counts']} {st.session_state["dict_variables_summary"]['sum_increase_decrease_prefix_event_counts']} of {st.session_state["dict_variables_summary"]['sum_percentage_diff_event_counts']:.2%} when we consider the non-Shotspotter events as the baseline."
+    f"We find that a total of {st.session_state['dict_variables_summary']['sum_var_false_event_counts']} non-Shotspotter events compared to a total of {st.session_state['dict_variables_summary']['sum_var_true_event_counts']} Shotspotter events, which is {st.session_state['dict_variables_summary']['sum_increase_decrease_event_counts']} {st.session_state['dict_variables_summary']['sum_increase_decrease_prefix_event_counts']} of {st.session_state['dict_variables_summary']['sum_percentage_diff_event_counts']:.2%} when we consider the non-Shotspotter events as the baseline."
 )
 st.subheader("Shell Casings")
 st.write(
-    f"We find that a total of {st.session_state["dict_variables_summary"]['sum_var_false_casings']} shell casings during non-Shotspotter events compared to a total of {st.session_state["dict_variables_summary"]['sum_var_true_casings']} shell casings during Shotspotter events, which is {st.session_state["dict_variables_summary"]['sum_increase_decrease_casings']} {st.session_state["dict_variables_summary"]['sum_increase_decrease_prefix_casings']} of {st.session_state["dict_variables_summary"]['sum_percentage_diff_casings']:.2%} when we consider the non-Shotspotter shell casings as the baseline."
+    f"We find that a total of {st.session_state['dict_variables_summary']['sum_var_false_casings']} shell casings during non-Shotspotter events compared to a total of {st.session_state['dict_variables_summary']['sum_var_true_casings']} shell casings during Shotspotter events, which is {st.session_state['dict_variables_summary']['sum_increase_decrease_casings']} {st.session_state['dict_variables_summary']['sum_increase_decrease_prefix_casings']} of {st.session_state['dict_variables_summary']['sum_percentage_diff_casings']:.2%} when we consider the non-Shotspotter shell casings as the baseline."
 )
 st.subheader("Injuries")
 st.write(
-    f"We find that a total of {st.session_state["dict_variables_summary"]['sum_var_false_injuries']} injuries during non-Shotspotter events compared to a total of {st.session_state["dict_variables_summary"]['sum_var_true_injuries']} injuries during Shotspotter events, which is {st.session_state["dict_variables_summary"]['sum_increase_decrease_injuries']} {st.session_state["dict_variables_summary"]['sum_increase_decrease_prefix_injuries']} of {st.session_state["dict_variables_summary"]['sum_percentage_diff_injuries']:.2%} when we consider the non-Shotspotter injuries as the baseline."
+    f"We find that a total of {st.session_state['dict_variables_summary']['sum_var_false_injuries']} injuries during non-Shotspotter events compared to a total of {st.session_state['dict_variables_summary']['sum_var_true_injuries']} injuries during Shotspotter events, which is {st.session_state['dict_variables_summary']['sum_increase_decrease_injuries']} {st.session_state['dict_variables_summary']['sum_increase_decrease_prefix_injuries']} of {st.session_state['dict_variables_summary']['sum_percentage_diff_injuries']:.2%} when we consider the non-Shotspotter injuries as the baseline."
 )
 st.subheader("Arrests")
 st.write(
-    f"We find that a total of {st.session_state["dict_variables_summary"]['sum_var_false_arrests']} arrests during non-Shotspotter events compared to a total of {st.session_state["dict_variables_summary"]['sum_var_true_arrests']} arrests during Shotspotter events, which is {st.session_state["dict_variables_summary"]['sum_increase_decrease_arrests']} {st.session_state["dict_variables_summary"]['sum_increase_decrease_prefix_arrests']} of {st.session_state["dict_variables_summary"]['sum_percentage_diff_arrests']:.2%} when we consider the non-Shotspotter arrests as the baseline."
+    f"We find that a total of {st.session_state['dict_variables_summary']['sum_var_false_arrests']} arrests during non-Shotspotter events compared to a total of {st.session_state['dict_variables_summary']['sum_var_true_arrests']} arrests during Shotspotter events, which is {st.session_state['dict_variables_summary']['sum_increase_decrease_arrests']} {st.session_state['dict_variables_summary']['sum_increase_decrease_prefix_arrests']} of {st.session_state['dict_variables_summary']['sum_percentage_diff_arrests']:.2%} when we consider the non-Shotspotter arrests as the baseline."
 )

@@ -77,7 +77,7 @@ st.sidebar.selectbox(
     "Choose Map Style:",
     options=["light", "dark", "road"],
     format_func=str.capitalize,
-    key="_mapstyle",
+    key='_mapstyle',
     on_change=keep,
     args=['mapstyle']
 )
@@ -127,7 +127,7 @@ st.session_state["selected_df_year"] = full_combinations_df[
 ]
 
 # create variable of summary since values used in other dashboard pages
-st.session_state["dict_variables_summary"] = executive_sumamry_dict_function()
+st.session_state['dict_variables_summary'] = executive_sumamry_dict_function()
 
 
 # get variables
@@ -190,7 +190,7 @@ device_layer = dictionary_pdk_layers.get(
 
 # header
 st.header("Shotspotter Alerts")
-st.write(f"We consider the events with no alerts as the baseline.")
+st.write("We consider the events with no alerts as the baseline.")
 
 
 
@@ -198,22 +198,22 @@ st.write(f"We consider the events with no alerts as the baseline.")
 a1, a2, a3 = st.columns(3)
 b1, b2 = st.columns(2)
 
-a1.metric("No. of Yr", f"{st.session_state["dict_variables_summary"]['count_years_event_counts']}")
+a1.metric("No. of Yr", f"{st.session_state['dict_variables_summary']['count_years_event_counts']}")
 a2.metric(
 "Alert: Avg. Events Per Yr.",
-f"{st.session_state["dict_variables_summary"]['mean_var_true_event_counts']:.2f}",
+f"{st.session_state['dict_variables_summary']['mean_var_true_event_counts']:.2f}",
 )
 a3.metric(
 "No alert: Avg. Events Per Yr.",
-f"{st.session_state["dict_variables_summary"]['mean_var_false_event_counts']:.2f}",
+f"{st.session_state['dict_variables_summary']['mean_var_false_event_counts']:.2f}",
 )
 b1.metric(
 "Diff. in Avg. Events Per Yr.",
-f"{st.session_state["dict_variables_summary"]['mean_diff_event_counts']:.2f}",
+f"{st.session_state['dict_variables_summary']['mean_diff_event_counts']:.2f}",
 )
 b2.metric(
 "Percent Diff. Avg. Events Per Yr.",
-f"{st.session_state["dict_variables_summary"]['mean_percentage_diff_event_counts']:.2%}",
+f"{st.session_state['dict_variables_summary']['mean_percentage_diff_event_counts']:.2%}",
 )
 
 st.header("Events Visualisations")
@@ -227,7 +227,7 @@ display_linechart_viz(y_col="event_counts", color_col="colour")
 st.subheader("Locations of Alerts and Public Devices")
 st.pydeck_chart(
     pdk.Deck(
-        map_style=f"{st.session_state["_mapstyle"]}",  # 'light', 'dark', 'road'
+        map_style=f"{st.session_state['_mapstyle']}",  # 'light', 'dark', 'road'
         initial_view_state=initial_viewing_state,
         layers=[
             display_map_layer(

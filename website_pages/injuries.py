@@ -77,7 +77,7 @@ st.sidebar.selectbox(
     "Choose Map Style:",
     options=["light", "dark", "road"],
     format_func=str.capitalize,
-    key="_mapstyle",
+    key='_mapstyle',
     on_change=keep,
     args=['mapstyle']
 )
@@ -190,29 +190,31 @@ device_layer = dictionary_pdk_layers.get(
 
 # header
 st.header("Injuries")
-st.write(f"We consider the injuries with no alerts as the baseline.")
+st.write("We consider the injuries with no alerts as the baseline.")
 
 # columns
 a1, a2, a3 = st.columns(3)
 b1, b2 = st.columns(2)
 
 # load text
-a1.metric("No. Yr", f"{st.session_state["dict_variables_summary"]['count_years_injuries']}")
+a1.metric("No. Yr", f"{st.session_state['dict_variables_summary']['count_years_injuries']}")
 a2.metric(
     "Alert: Avg. Injuries Per Yr.",
-    f"{st.session_state["dict_variables_summary"]['mean_var_true_injuries']:.2f}",
+    f"{st.session_state['dict_variables_summary']['mean_var_true_injuries']:.2f}",
 )
 a3.metric(
     "No alert: Avg. Injuries Per Yr.",
-    f"{st.session_state["dict_variables_summary"]['mean_var_false_injuries']:.2f}",
+    f"{st.session_state['dict_variables_summary']['mean_var_false_injuries']:.2f}",
 )
+
 b1.metric(
     "Diff. in Avg. Injuries Per Yr.",
-    f"{st.session_state["dict_variables_summary"]['mean_diff_injuries']:.2f}",
+    f"{st.session_state['dict_variables_summary']['mean_diff_injuries']:.2f}",
 )
+
 b2.metric(
     "Percent Diff. in Avg. Injuries Per Yr.",
-    f"{st.session_state["dict_variables_summary"]['mean_percentage_diff_injuries']:.2%}",
+    f"{st.session_state['dict_variables_summary']['mean_percentage_diff_injuries']:.2%}",
 )
 
 st.header("Injury Visualisations")
@@ -226,7 +228,7 @@ display_linechart_viz(y_col="injuries", color_col="colour")
 st.subheader("Locations of Injuries and Public Devices")
 st.pydeck_chart(
     pdk.Deck(
-        map_style=f"{st.session_state["_mapstyle"]}",  # 'light', 'dark', 'road'
+        map_style=f"{st.session_state['_mapstyle']}",  # 'light', 'dark', 'road'
         initial_view_state=initial_viewing_state,
         layers=[
             display_map_layer(
